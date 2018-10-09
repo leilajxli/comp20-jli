@@ -14,17 +14,42 @@
 <div id="lyrics"></div>
 
 <script> 
-	// Complete this section and create a CSS file named style.css
+	
 	var wedo = document.getElementById ("wedo"); 
 	var lyrics = document.getElementById ("lyrics"); 
-	wedo.addEventListener ("timeupdate",function() { //what is addEventListener?
-		console.log("Hello Viewer!");
+	wedo.addEventListener ("timeupdate",function() { 
+		
+		if (wedo.currentTime < 6) {
+			lyrics.innerHTML ="<h2>Who controls the British crown?</h2>";
+		}
+		else if (wedo.currentTime > 6 && wedo.currentTime < 7.5){
+			lyrics.innerHTML = "<h2>Who keeps the metric system down?</h2>";
+		}
+		else if (wedo.currentTime > 7.5 && wedo.currentTime < 12){
+			lyrics.innerHTML = "<h2>We do, we do!</h2>";
+		}
+		else if (wedo.currentTime > 12 && wedo.currentTime < 14){
+			lyrics.innerHTML = "<h2>Who keeps Atlantis off the maps?</h2>";
+		}
+		else if (wedo.currentTime > 14 && wedo.currentTime < 16){
+			lyrics.innerHTML = "<h2>Who keeps the Martians under wraps?</h2>";
+		}
+		else if (wedo.currentTime > 16 && wedo.currentTime < 20){
+			lyrics.innerHTML = "<h2>We do, we do!</h2>";
+		}
+		else if (wedo.currentTime > 20 && wedo.currentTime < 25){
+			lyrics.innerHTML = "<h2>Who holds back the electric car?</h2>";
+		}
+		else if (wedo.currentTime > 25 && wedo.currentTime < 29){
+			lyrics.innerHTML = "<h2>Who makes Steve Guttenberg a star?<h2>";
+		}
+		else {
+			lyrics.innerHTML = "<h2>Thanks for watching!</h2>";
+		}
+	},false
 
-	}
-		)
+		);
 	
-
-
 </script>
 </body>
 </html>	
