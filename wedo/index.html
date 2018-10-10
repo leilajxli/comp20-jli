@@ -19,13 +19,16 @@
 	var lyrics = document.getElementById ("lyrics"); 
 	wedo.addEventListener ("timeupdate",function() { 
 		
-		if (wedo.currentTime < 6) {
+		if (wedo.currentTime < 3.5) {
+			lyrics.innerHTML =" ";
+		}
+		else if (wedo.currentTime > 3.5 && wedo.currentTime < 6) {
 			lyrics.innerHTML ="<h2>Who controls the British crown?</h2>";
 		}
-		else if (wedo.currentTime > 6 && wedo.currentTime < 7.5){
+		else if (wedo.currentTime > 6 && wedo.currentTime < 8){
 			lyrics.innerHTML = "<h2>Who keeps the metric system down?</h2>";
 		}
-		else if (wedo.currentTime > 7.5 && wedo.currentTime < 12){
+		else if (wedo.currentTime > 8 && wedo.currentTime < 12){
 			lyrics.innerHTML = "<h2>We do, we do!</h2>";
 		}
 		else if (wedo.currentTime > 12 && wedo.currentTime < 14){
@@ -34,14 +37,29 @@
 		else if (wedo.currentTime > 14 && wedo.currentTime < 16){
 			lyrics.innerHTML = "<h2>Who keeps the Martians under wraps?</h2>";
 		}
-		else if (wedo.currentTime > 16 && wedo.currentTime < 20){
+		else if (wedo.currentTime > 16 && wedo.currentTime < 21){
 			lyrics.innerHTML = "<h2>We do, we do!</h2>";
 		}
-		else if (wedo.currentTime > 20 && wedo.currentTime < 25){
+		else if (wedo.currentTime > 21 && wedo.currentTime < 25){
 			lyrics.innerHTML = "<h2>Who holds back the electric car?</h2>";
 		}
 		else if (wedo.currentTime > 25 && wedo.currentTime < 29){
 			lyrics.innerHTML = "<h2>Who makes Steve Guttenberg a star?<h2>";
+		}
+		else if (wedo.currentTime > 29 && wedo.currentTime < 33){
+			lyrics.innerHTML = "<h2>We do, we do!<h2>";
+		}
+		else if (wedo.currentTime > 33 && wedo.currentTime < 35){
+			lyrics.innerHTML = "<h2>Who robs cavefish of their sight?<h2>";
+		}
+		else if (wedo.currentTime > 35 && wedo.currentTime < 37){
+			lyrics.innerHTML = "<h2>Who rigs every Oscar night?<h2>";
+		}
+		else if (wedo.currentTime > 37 && wedo.currentTime < 40){
+			lyrics.innerHTML = "<h2>We do!<h2>";
+		}
+		else if (wedo.currentTime > 40 && wedo.currentTime < 45){
+			lyrics.innerHTML = "<h2>We do!<h2>";
 		}
 		else {
 			lyrics.innerHTML = "<h2>Thanks for watching!</h2>";
