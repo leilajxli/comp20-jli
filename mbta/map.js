@@ -72,7 +72,7 @@ function renderMap() {
     infowindow.open(map, myMarker);
   });
 
-  renderMBTAStops();
+  //renderMBTAStops();
 }
 
 /*
@@ -85,7 +85,6 @@ function printLocation() {
 /*
 function renderMBTAStops(){
   MBTAStops = []
-
 
 }
 */
