@@ -3,6 +3,7 @@ var currentLng = 0;
 var currentLoc = new google.maps.LatLng(currentLat, currentLng); 
 
 var map = undefined; 
+var myMarker; 
 var infoWindow = new google.maps.InfoWindow;
 
 // Initialize and add the map
@@ -16,7 +17,11 @@ function initMap(){
 			center: SouthStation; 	 //centered on south station
 		}
 	)
-	var marker = new google.maps.Marker ({position: SouthStation, map: map});
+  getMyLocation();
+}
+
+function getMyLocation{
+	//var marker = new google.maps.Marker ({position: SouthStation, map: map});
 
 	// Try HTML5 geolocation.
         if (navigator.geolocation) { // the navigator.geolocation object is supported on the browser
@@ -35,8 +40,7 @@ function initMap(){
           // Browser doesn't support Geolocation
           handleLocationError(false, infoWindow, map.getCenter());
         }
-      }
-
+}
 
 function rendermap(){
 
