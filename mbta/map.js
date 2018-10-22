@@ -6,6 +6,8 @@ var map;
 var myMarker; 
 var infoWindow = new google.maps.InfoWindow();
 
+var MBTAStops = Array();    //this will be a list of all stops 
+
 // Initialize and add the map
 function initMap(){       //where do I call the first function?
   // The location of South Station
@@ -80,8 +82,12 @@ function printLocation() {
   }
 */
 
+/*
 function renderMBTAStops(){
+  MBTAStops = []
+
 
 }
+*/
 
 
