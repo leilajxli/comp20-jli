@@ -3,11 +3,11 @@ var currentLng = 0;
 var currentLoc = new google.maps.LatLng(currentLat, currentLng); 
 
 var map; 
-var meMarker; 
+var myMarker; 
 var infoWindow = new google.maps.InfoWindow();
 
 // Initialize and add the map
-function initMap(){
+function initMap(){       //where do I call the first function?
   // The location of South Station
   var SouthStation = {lat: 42.352271, lng: -71.05524200000001};
   // The map, centered at Uluru
@@ -58,18 +58,30 @@ function renderMap() {
   map.panTo(currentLoc);
   
   // set value to the declared marker variable 
-  meMarker = new google.maps.Marker({
+  myMarker = new google.maps.Marker({
     position: currentLoc,
     title: "This is where I am!"
   });
-  meMarker.setMap(map); //this one can be google's default red marker 
+  myMarker.setMap(map); //this one can be google's default red marker 
     
   // Open info window on click of marker
   google.maps.event.addListener(marker, 'click', function() {
-    infowindow.setContent(meMarker.title);
-    infowindow.open(map, meMarker);
+    infowindow.setContent(myMarker.title);
+    infowindow.open(map, myMarker);
   });
+
+  renderMBTAStops();
 }
 
+/*
+function printLocation() {
+    elem = document.getElementById("location");
+    elem.innerHTML = '<p class="fun">' + lat + ", " + lng + "</p>";
+  }
+*/
+
+function renderMBTAStops(){
+
+}
 
 
