@@ -67,7 +67,7 @@ function renderMap() {
   myMarker.setMap(map); //this one can be google's default red marker 
     
   // Open info window on click of marker
-  google.maps.event.addListener(marker, 'click', function() {
+  google.maps.event.addListener(myMarker, 'click', function() {
     infowindow.setContent(myMarker.title);
     infowindow.open(map, myMarker);
   });
