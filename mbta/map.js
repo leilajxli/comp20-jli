@@ -2,33 +2,34 @@ var currentLat = 0;
 var currentLng = 0;
 var currentLoc = new google.maps.LatLng(currentLat, currentLng); 
 
-var map = undefined; 
-var myMarker; 
-var infoWindow = new google.maps.InfoWindow;
+var map; 
+var meMarker; 
+var infoWindow = new google.maps.InfoWindow();
 
 // Initialize and add the map
 function initMap(){
-	// The location of South Station
-	var SouthStation = {lat: 42.352271, lng: -71.05524200000001};
-	// The map, centered at Uluru
-	map = new google.maps.Map(
-		document.getElementById('map'), {
-			zoom: 10, 				 //zoom level for a city
-			center: SouthStation; 	 //centered on south station
-		}
-	)
+  // The location of South Station
+  var SouthStation = {lat: 42.352271, lng: -71.05524200000001};
+  // The map, centered at Uluru
+  map = new google.maps.Map(
+    document.getElementById("map"), {
+      zoom: 10,          //zoom level for a city
+      center: SouthStation   //centered on south station
+    }
+  );
   getMyLocation();
 }
 
-function getMyLocation{
-	//var marker = new google.maps.Marker ({position: SouthStation, map: map});
+function getMyLocation(){
+  //var marker = new google.maps.Marker ({position: SouthStation, map: map});
 
-	// Try HTML5 geolocation.
+  // Try HTML5 geolocation object
         if (navigator.geolocation) { // the navigator.geolocation object is supported on the browser
           navigator.geolocation.getCurrentPosition(function(position) {
-              currentLat = position.coords.latitude,
+              currentLat = position.coords.latitude;
               currentLng = position.coords.longitude;
-              rendermap();
+              renderMap();
+
             infoWindow.setPosition(pos);
             infoWindow.setContent('Location found.');
             infoWindow.open(map);
@@ -42,6 +43,33 @@ function getMyLocation{
         }
 }
 
-function rendermap(){
+function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+        infoWindow.setPosition(pos);
+        infoWindow.setContent(browserHasGeolocation ?
+                              'Error: The Geolocation service failed.' :
+                              'Error: Your browser doesn\'t support geolocation.');
+        infoWindow.open(map);
+      }
 
+function renderMap() {
+  currentLoc = new google.maps.LatLng(currentLat, currentLng);
+
+  //make the map object go to whereIam
+  map.panTo(currentLoc);
+  
+  // set value to the declared marker variable 
+  meMarker = new google.maps.Marker({
+    position: currentLoc,
+    title: "This is where I am!"
+  });
+  meMarker.setMap(map); //this one can be google's default red marker 
+    
+  // Open info window on click of marker
+  google.maps.event.addListener(marker, 'click', function() {
+    infowindow.setContent(meMarker.title);
+    infowindow.open(map, meMarker);
+  });
 }
+
+
+
