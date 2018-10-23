@@ -32,10 +32,10 @@ function getMyLocation(){
               currentLng = position.coords.longitude;
               renderMap();
 
-            infoWindow.setPosition(pos);
+            infoWindow.setPosition(currentLoc);
             infoWindow.setContent('Location found.');
             infoWindow.open(map);
-            map.setCenter(pos);
+            map.setCenter(currentLoc);
           }, function() {
             handleLocationError(true, infoWindow, map.getCenter());
           });
@@ -45,8 +45,8 @@ function getMyLocation(){
         }
 }
 
-function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-        infoWindow.setPosition(pos);
+function handleLocationError(browserHasGeolocation, infoWindow, currentLoc) {
+        infoWindow.setPosition(currentLoc);
         infoWindow.setContent(browserHasGeolocation ?
                               'Error: The Geolocation service failed.' :
                               'Error: Your browser doesn\'t support geolocation.');
