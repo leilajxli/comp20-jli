@@ -19,7 +19,7 @@ function initMap(){       //where do I call the first function?
   // The map, centered at Uluru
   map = new google.maps.Map(
     document.getElementById("map"), {
-      zoom: 10,          //zoom level for a city
+      zoom: 13,              //city=10, streets=15
       center: SouthStation   //centered on south station
     }
   );
@@ -58,6 +58,9 @@ function handleLocationError(browserHasGeolocation, infoWindow, currentLoc) {
       }
 
 function renderMap() {
+
+  console.log("in the function renderMap");
+
   currentLoc = new google.maps.LatLng(currentLat, currentLng);
 
   //make the map object go to whereIam
@@ -80,9 +83,11 @@ function renderMap() {
 }
 
 function renderMBTAStops(){
-  MBTAStops = JSON.parse(
 
-{"MBTAStops":[
+  console.log("in the function renderMBTAStops");
+
+  MBTAStops = 
+{
   { "stop_name":"South Station","stop_lat":"42.352271","stop_lon":"-71.05524200000001","stop_id":"place-sstat" },
   { "stop_name":"Andrew","stop_lat":"42.330154","stop_lon":"-71.057655","stop_id":"place-andrw" },
   { "stop_name":"Porter Square","stop_lat":"42.3884","stop_lon":"-71.11914899999999","stop_id":"place-portr" },
@@ -104,16 +109,21 @@ function renderMBTAStops(){
   { "stop_name":"Wollaston","stop_lat":"42.2665139","stop_lon":"-71.0203369","stop_id":"place-wlsta" },
   { "stop_name":"Fields Corner","stop_lat":"42.300093","stop_lon":"-71.061667","stop_id":"place-fldcr" },
   { "stop_name":"Central Square","stop_lat":"42.365486","stop_lon":"-71.103802","stop_id":"place-cntsq" },
-  { "stop_name":"Braintree","stop_lat":"42.2078543","stop_lon":"-71.0011385","stop_id":"place-brntn" },
-]}
-   );
+  { "stop_name":"Braintree","stop_lat":"42.2078543","stop_lon":"-71.0011385","stop_id":"place-brntn" }
+
+};
   
+  console.log("after JSON");
+
   addMarkers(map);
 
 }
 
 //cited: https://developers.google.com/maps/documentation/javascript/examples/icon-complex
 function addMarkers(map) {
+
+      console.log("in the function addMarkers");
+
         // Adds markers to the map.
         // Marker sizes are expressed as a Size of X,Y where the origin of the image
         // (0,0) is located in the top left of the image.
@@ -141,14 +151,14 @@ function addMarkers(map) {
         for (var i = 0; i < MBTAStops.length; i++) {
           stop = MBTAStops[i];
           stopMarker = new google.maps.Marker({
-            position: {lat: stop[1], lng: stop[2]},
+            position: {lat: stop.stop_lat, lng: stop.stop_lon},
             map: map,
             icon: image,
             shape: shape,
-            title: stop[0],
+            title: stop.stop_name,
             //All markers are displayed on the map in order of their zIndex, (type:number)
             //with higher values displaying in front of markers with lower values. ->this might be a problem with strings?
-            zIndex: stop[3]   
+            zIndex: stop.stop_id   
           });
         }
 
