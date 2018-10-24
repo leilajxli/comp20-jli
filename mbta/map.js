@@ -1,77 +1,12 @@
+var map; 
+var SouthStation = {lat: 42.352271, lng: -71.05524200000001};
+
+var myMarker; 
 var currentLat = 0;
 var currentLng = 0;
-var currentLoc = new google.maps.LatLng(currentLat, currentLng); 
+var currentLoc = new google.maps.LatLng(currentLat, currentLng);  
 
-var map; 
-var myMarker; 
 var infoWindow = new google.maps.InfoWindow();
-
-//https://developers.google.com/maps/documentation/javascript/geolocation
-// Initialize and add the map
-function initMap(){       
-  var SouthStation = {lat: 42.352271, lng: -71.05524200000001};
-  map = new google.maps.Map(
-    document.getElementById("map"), {
-      zoom: 13,              //city=10, streets=15
-      center: SouthStation   //centered on south station
-    }
-  );
-  getMyLocation();
-  
-}
-
-function getMyLocation(){
-  //var marker = new google.maps.Marker ({position: SouthStation, map: map});
-  // Try HTML5 geolocation object
-        if (navigator.geolocation) { // the navigator.geolocation object is supported on the browser
-          navigator.geolocation.getCurrentPosition(function(position) {
-              currentLat = position.coords.latitude;
-              currentLng = position.coords.longitude;
-              renderMap();
-
-            infoWindow.setPosition(currentLoc);
-            infoWindow.setContent('Location found.');
-            infoWindow.open(map);
-            map.setCenter(currentLoc);
-          }, function() {
-            handleLocationError(true, infoWindow, map.getCenter());
-          });
-        } else {
-          // Browser doesn't support Geolocation
-          handleLocationError(false, infoWindow, map.getCenter());
-        }
-}
-
-function handleLocationError(browserHasGeolocation, infoWindow, currentLoc) {
-        infoWindow.setPosition(currentLoc);
-        infoWindow.setContent(browserHasGeolocation ?
-                              'Error: The Geolocation service failed.' :
-                              'Error: Your browser doesn\'t support geolocation.');
-        infoWindow.open(map);
-      }
-
-function renderMap() {
-
-  currentLoc = new google.maps.LatLng(currentLat, currentLng);
-
-  //make the map object go to whereIam
-  map.panTo(currentLoc);
-  
-  // set value to the declared marker variable 
-  myMarker = new google.maps.Marker({
-    position: currentLoc,
-    title: "This is where I am!"
-  });
-  myMarker.setMap(map); //this one can be google's default red marker 
-    
-  // Open info window on click of marker
-  google.maps.event.addListener(myMarker, 'click', function() {
-    infoWindow.setContent(myMarker.title);
-    infoWindow.open(map, myMarker);
-  });
-
-  addMarkers(map);
-}
 
 var MBTAStops = 
 [
@@ -99,30 +34,81 @@ var MBTAStops =
   { "stop_name":"Braintree","stop_lat":42.2078543,"stop_lon":-71.0011385,"stop_id":"place-brntn" }
 ];
 
-//https://developers.google.com/maps/documentation/javascript/examples/icon-simple
-function addMarkers(map) {
+//https://developers.google.com/maps/documentation/javascript/geolocation
+// Initialize and add the map
+function initMap(){       
+ 
+  map = new google.maps.Map(
+    document.getElementById("map"), {
+      zoom: 13,              //city=10, streets=15
+      center: SouthStation   //centered on south station
+    }
+  );
+  getMyLocation();
+}
 
-         //icon downloaded from here: https://icons8.com/icon/set/signpost/all
+function getMyLocation(){
+
+  //var marker = new google.maps.Marker ({position: SouthStation, map: map});
+  // Try HTML5 geolocation object
+        if (navigator.geolocation) { // the navigator.geolocation object is supported on the browser
+          navigator.geolocation.getCurrentPosition(function(position) {
+              currentLat = position.coords.latitude;
+              currentLng = position.coords.longitude;
+              renderMap();
+
+            infoWindow.setPosition(currentLoc);
+            infoWindow.setContent('Location found.');
+            infoWindow.open(map);
+            map.setCenter(currentLoc);
+          }, function() {
+            handleLocationError(true, infoWindow, map.getCenter());
+          });
+        } else {
+          // Browser doesn't support Geolocation
+          handleLocationError(false, infoWindow, map.getCenter());
+        }
+}
+
+function handleLocationError(browserHasGeolocation, infoWindow, currentLoc) {
+
+        infoWindow.setPosition(currentLoc);
+        infoWindow.setContent(browserHasGeolocation ?
+                              'Error: The Geolocation service failed.' :
+                              'Error: Your browser doesn\'t support geolocation.');
+        infoWindow.open(map);
+      }
+
+function renderMap() {
+
+  currentLoc = new google.maps.LatLng(currentLat, currentLng);
+  //make the map object go to whereIam
+  map.panTo(currentLoc);
+  // set value to the declared marker variable 
+  myMarker = new google.maps.Marker({
+    position: currentLoc,
+    title: "This is where I am!"
+  });
+  myMarker.setMap(map); //this one can be google's default red marker 
+  // Open info window on click of marker
+  google.maps.event.addListener(myMarker, 'click', function() {
+    infoWindow.setContent(myMarker.title);
+    infoWindow.open(map, myMarker);
+  });
+
+  addMarkers(map);
+}
+
+//https://developers.google.com/maps/documentation/javascript/examples/icon-simple
+//https://developers.google.com/maps/documentation/javascript/examples/polyline-simple
+function addMarkers(map) {
+         
+        //icon downloaded from here: https://icons8.com/icon/set/signpost/all
         var image = 'signpost.png'; 
         var PolylinePath =[];
-
-        for (var i = 0; i < 22; i++) {
-          var stop = MBTAStops[i];
-          var stopMarker = new google.maps.Marker({
-            position: {lat: stop["stop_lat"], lng: stop["stop_lon"]},
-            map: map,
-            icon: image, 
-            title: stop["stop_name"]
-            //zIndex: stop["stop_id"]   
-            });
-          stopLatLng = new google.maps.LatLng({lat: stop["stop_lat"], lng: stop["stop_lon"]});
-          console.log(stopLatLng);
-         // PolylinePath.push(stopLatLng);
-        }
-
-        //https://developers.google.com/maps/documentation/javascript/examples/polyline-simple
+        
         var redLine = new google.maps.Polyline({
-          path: PolylinePath,
+          //path: PolylinePath,
           geodesic: true,
           strokeColor: '#FF0000',
           strokeOpacity: 1.0,
@@ -130,6 +116,27 @@ function addMarkers(map) {
         });
 
         redLine.setMap(map);
+
+        //each time, add a marker and line to the next stop;
+        for (var i = 0; i < 22; i++) {
+          var stop = MBTAStops[i];
+          var stopLatLng = new google.maps.LatLng({lat: stop["stop_lat"], lng: stop["stop_lon"]});
+          var stopMarker = new google.maps.Marker({
+            position: stopLatLng,
+            map: map,
+            icon: image, 
+            title: stop["stop_name"]
+            //zIndex: stop["stop_id"]   
+            });
+          PolylinePath = redLine.getPath(); //Return Value:  MVCArray<LatLng>, Retrieves the first path.
+          console.log(redLine.getPath());
+          PolylinePath.push(stopLatLng); 
+          redLine.setMap(map);
+        }
+
+        console.log(PolylinePath);
+
+        
 
 /*
         stopMarker.setMap(map); //now each stop marker will be rendered on the map
