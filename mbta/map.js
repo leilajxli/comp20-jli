@@ -6,12 +6,10 @@ var map;
 var myMarker; 
 var infoWindow = new google.maps.InfoWindow();
 
-//cited: https://developers.google.com/maps/documentation/javascript/geolocation
+//https://developers.google.com/maps/documentation/javascript/geolocation
 // Initialize and add the map
-function initMap(){       //where do I call the first function?
-  // The location of South Station
+function initMap(){       
   var SouthStation = {lat: 42.352271, lng: -71.05524200000001};
-  // The map, centered at Uluru
   map = new google.maps.Map(
     document.getElementById("map"), {
       zoom: 13,              //city=10, streets=15
@@ -24,7 +22,6 @@ function initMap(){       //where do I call the first function?
 
 function getMyLocation(){
   //var marker = new google.maps.Marker ({position: SouthStation, map: map});
-
   // Try HTML5 geolocation object
         if (navigator.geolocation) { // the navigator.geolocation object is supported on the browser
           navigator.geolocation.getCurrentPosition(function(position) {
@@ -106,7 +103,8 @@ var MBTAStops =
 function addMarkers(map) {
 
          //icon downloaded from here: https://icons8.com/icon/set/signpost/all
-        var image = 'signpost.png' 
+        var image = 'signpost.png'; 
+        var PolylinePath =[];
 
         for (var i = 0; i < 22; i++) {
           var stop = MBTAStops[i];
@@ -117,7 +115,21 @@ function addMarkers(map) {
             title: stop["stop_name"]
             //zIndex: stop["stop_id"]   
             });
+          stopLatLng = new google.maps.LatLng({lat: stop["stop_lat"], lng: stop["stop_lon"]});
+          console.log(stopLatLng);
+         // PolylinePath.push(stopLatLng);
         }
+
+        //https://developers.google.com/maps/documentation/javascript/examples/polyline-simple
+        var redLine = new google.maps.Polyline({
+          path: PolylinePath,
+          geodesic: true,
+          strokeColor: '#FF0000',
+          strokeOpacity: 1.0,
+          strokeWeight: 2
+        });
+
+        redLine.setMap(map);
 
 /*
         stopMarker.setMap(map); //now each stop marker will be rendered on the map
