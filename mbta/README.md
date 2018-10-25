@@ -29,7 +29,8 @@ Dodged:
 (-15 points) You used jQuery.
 
 Questions: 
-Should the nearest stop be calculated after clicking my location marker or after loading my location? I did the former to save loading time. 
+Should the nearest stop be calculated after clicking my location marker or after loading my location? I did the former to save loading time. --> resolved
+What is this: zIndex: stop["stop_id"] 
 
 Mind map: 
 <iframe width='853' height='480' src='https://embed.coggle.it/diagram/W86XHeExeUO3X1qn/4c3714a0d68f4caccc2e819c13c5811e95de854cfac76002c5fec62702981cbd' frameborder='0' allowfullscreen></iframe>
