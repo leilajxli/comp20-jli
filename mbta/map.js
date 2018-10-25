@@ -105,7 +105,7 @@ console.log("hello from the createMarker function!!!!");
 
   var image = 'signpost.png'; 
   var marker;
-  var contentString = "";
+  var contentString;
   var stop_id = stop["stop_id"];
 
   marker = new google.maps.Marker({
@@ -115,10 +115,13 @@ console.log("hello from the createMarker function!!!!");
     title: stop["stop_name"]   
   });
   google.maps.event.addListener(marker, 'click', function() { 
+   //contentString = "<h1>" + stop["stop_name"] + "</h1>";
+   console.log(contentString);
    contentString = getSchedule(stop_id);
+   console.log("the stop_id is " + stop_id);
+   console.log("the return value of the getSchedule function is "+ contentString);
    infoWindow.open(map, this);
    infoWindow.setContent(contentString);
-   //infoWindow.setContent("hello!");
  }); 
 
   return marker;
@@ -215,57 +218,76 @@ function calNearest(LatLng) {
   };
 }
 
-//this function takes in a string (stop_id) returns a string 
+//this function takes in a string (stop_id) returns a string(schedule of upcoming trains)
 function getSchedule(string){
+
   console.log("Hi from function getSchedule!"); 
-  var requestURL = 'https://chicken-of-the-sea.herokuapp.com/redline/schedule.json?stop_id='+ string;
-  var request = new XMLHttpRequest();
+  
+  var requestURL = "https://chicken-of-the-sea.herokuapp.com/redline/schedule.json?stop_id="+ string;
+  var request; 
   var parsed;
   var direction; 
-  var returnHTML= "";
+  var returnHTML = "";
   var contentString;
   //1 open 
-  request.open('GET', requestURL, true); 
-  console.log("the requestURL is "+requestURL);
-  console.log("the readyState is" + request.readyState + " the status is "+request.status);
+  request = new XMLHttpRequest();
+  request.open("GET", requestURL, true); 
+  
+  //console.log("the requestURL is "+ requestURL);
+  //console.log("the readyState is " + request.readyState + " the status is "+ request.status);
+  
   //2 event listener 
   request.onreadystatechange = function (){
+    console.log("the readyState is " + request.readyState + " the status is "+ request.status);
+    
     if (request.readyState == 4 && request.status == 200) {
       //3 fire off a request 
-      console.log("request.responseText" + request.responseText);//works 
+      console.log("in the if statement");//works 
+      
       parsed = JSON.parse(request.responseText); 
+      
       console.log("not in the for loop yet"); //works 
       console.log("parsed.data.length is "+ parsed.data.length);//works 
+      
       for (var i = 0; i < parsed.data.length; i++) {
-        //console.log("finally in the for loop"); //works
+        console.log("finally in the for loop"); //works
         //console.log(i);
         if (parsed.data[i].attributes.direction_id == 0) {
-            direction = "Northbound to Alewife";}
-          else if (parsed.data[i].attributes.direction_id == 1){
-            direction = "Southbound (to Ashmont/Braintree)";}
-        //console.log("direction is "+ direction); //works 
-        returnHTML += "<p>The next train "+ direction + " is arriving at " + parsed.data[i].attributes.arrival_time + ".</p>";  
-          }
-          console.log("returnHTML is "+ returnHTML); //works
+          direction = "Northbound to Alewife";
         }
-        else if (request.readyState == 4 && request.status != 200) {
-          returnHTML = "<p>Schedule not available.</p>";
-        }
-        else if (request.readyState == 3) {
-          returnHTML = "<p>Loading...</p>";
+        else if (parsed.data[i].attributes.direction_id == 1){
+          direction = "Southbound to Ashmont/Braintree";
         }
 
-      console.log("returnHTML is "+ returnHTML); 
+        //console.log("direction is "+ direction); //works 
+        returnHTML += "<p>The next train "+ direction + " is arriving at " + parsed.data[i].attributes.arrival_time + ".</p>";  
+      }
+console.log("returnHTML is "+ returnHTML + " but typeof the return result is "+ typeof returnHTML); 
+
+      return returnHTML;
+    }
+
+    else if (request.readyState == 4 && request.status != 200) {
+        returnHTML = "<p>Schedule not available.</p>";
+        console.log("returnHTML is "+ returnHTML + " but typeof the return result is "+ typeof returnHTML); 
+
+      return returnHTML;
+    }
+
+    else if (request.readyState == 3) {
+      returnHTML = "<p>Loading...</p>";
+    }
+    console.log("the readyState is " + request.readyState + " the status is "+ request.status);
+    console.log("returnHTML is "+ returnHTML); 
+    console.log("returnHTML is "+ returnHTML + " but typeof the return result is "+ typeof returnHTML); 
+
+      return returnHTML;
+  
+    };
+
       //4 send back the content 
       request.send();
-    
-      contentString = 
-      "<h1>" + stop.stop_name + "</h1>" + returnHTML ;   
-      
-      console.log("contentString is " + contentString);
-      };
-      return contentString;
-    
-  }
+
+    }
 
 
