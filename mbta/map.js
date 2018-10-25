@@ -9,7 +9,7 @@ var currentLoc = new google.maps.LatLng(currentLat, currentLng);
 var infoWindow = new google.maps.InfoWindow();
 
 var MBTAStops = 
-[ //[0]-[12] Path1
+[ 
   { "stop_name":"Alewife","stop_lat":42.395428,"stop_lon":-71.142483,"stop_id":"place-alfcl"},
   { "stop_name":"Davis","stop_lat":42.39674,"stop_lon":-71.121815,"stop_id":"place-davis" },
   { "stop_name":"Porter Square","stop_lat":42.3884,"stop_lon":-71.11914899999999,"stop_id":"place-portr" },
@@ -23,12 +23,12 @@ var MBTAStops =
   { "stop_name":"Broadway","stop_lat":42.342622,"stop_lon":-71.056967,"stop_id":"place-brdwy" },
   { "stop_name":"Andrew","stop_lat":42.330154,"stop_lon":-71.057655,"stop_id":"place-andrw" },
   { "stop_name":"JFK/UMass","stop_lat":42.320685,"stop_lon":-71.052391,"stop_id":"place-jfk" },
-  //[13]-[16] Path2
+  
   { "stop_name":"Savin Hill","stop_lat":42.31129,"stop_lon":-71.053331,"stop_id":"place-shmnl" },
   { "stop_name":"Fields Corner","stop_lat":42.300093,"stop_lon":-71.061667,"stop_id":"place-fldcr" },
   { "stop_name":"Shawmut","stop_lat":42.29312583,"stop_lon":-71.06573796000001,"stop_id":"place-smmnl" },
   { "stop_name":"Ashmont","stop_lat":42.284652,"stop_lon":-71.06448899999999,"stop_id":"place-asmnl" },  
-  //[17]-[21] Path3
+  
   { "stop_name":"North Quincy","stop_lat":42.275275,"stop_lon":-71.029583,"stop_id":"place-nqncy" },
   { "stop_name":"Wollaston","stop_lat":42.2665139,"stop_lon":-71.0203369,"stop_id":"place-wlsta" },
   { "stop_name":"Quincy Center","stop_lat":42.251809,"stop_lon":-71.005409,"stop_id":"place-qnctr" },
@@ -36,10 +36,9 @@ var MBTAStops =
   { "stop_name":"Braintree","stop_lat":42.2078543,"stop_lon":-71.0011385,"stop_id":"place-brntn" }
 ];
 
+//Initialize and add the map
 //https://developers.google.com/maps/documentation/javascript/geolocation
-// Initialize and add the map
 function initMap(){       
- 
   map = new google.maps.Map(
     document.getElementById("map"), {
       zoom: 13,              //city=10, streets=15
@@ -50,15 +49,14 @@ function initMap(){
   getMyLocation();
 }
 
+//use the navigator object to get my current location 
 function getMyLocation(){
-
   //var marker = new google.maps.Marker ({position: SouthStation, map: map});
-  // Try HTML5 geolocation object
         if (navigator.geolocation) { // the navigator.geolocation object is supported on the browser
           navigator.geolocation.getCurrentPosition(function(position) {
               currentLat = position.coords.latitude;
               currentLng = position.coords.longitude;
-              whereIam();      //call funtion to find my current location
+              renderMap();      //call funtion to find my current location
 
             map.setCenter(currentLoc);
           }, function() {
@@ -70,19 +68,19 @@ function getMyLocation(){
         }
 }
 
+//display an infoWindow if the Geolocation service failed.
 function handleLocationError(browserHasGeolocation, infoWindow, currentLoc) {
-
         infoWindow.setPosition(currentLoc);
         infoWindow.setContent(browserHasGeolocation ?
                               'Error: The Geolocation service failed.' :
                               'Error: Your browser doesn\'t support geolocation.');
         infoWindow.open(map);
-      }
+}
 
+//add Markers for all the MBTA stops and connect them with a polyline 
 //https://developers.google.com/maps/documentation/javascript/examples/icon-simple
 //https://developers.google.com/maps/documentation/javascript/examples/polyline-simple
 function addMarkers(map) {
-         
         //icon downloaded from here: https://icons8.com/icon/set/signpost/all
         var image = 'signpost.png'; 
         var stop;
@@ -114,34 +112,45 @@ function addMarkers(map) {
           strokeWeight: 2
         });
         Polyline.setMap(map);
+}
 
-  }
-function whereIam() {
+//add a marker on my current location, infowindow and render it on the map 
+function renderMap() {
   currentLoc = new google.maps.LatLng(currentLat, currentLng);
   //make the map object go to whereIam
   map.panTo(currentLoc);
-  // set value to the declared marker variable 
+  //set value to the declared marker variable 
   myMarker = new google.maps.Marker({
     position: currentLoc,
     title: "This is where I am!",
   });
   myMarker.setMap(map); 
 
-  var contentString = 
-  "<p>The nearest MBTA Red Line subway stop is " + nearestStop(currentLoc).name + " which is " + nearestStop(currentLoc).distance + " from me.";    
-  console.log(nearestStop(currentLoc));
-  console.log (contentString);
-             
-  infoWindow.setContent(contentString);
+  //call the function to calculate the nearest MBTA stop, use an object to store the output 
+  var nearestStop = calNearest(currentLoc);
+  //render a Polyline that connects current location marker to the nearest stop marker
+  var Polyline = new google.maps.Polyline({
+          path: [currentLoc,nearestStop.LatLng],
+          geodesic: true,
+          strokeColor: '#0000FF',
+          strokeOpacity: 1.0,
+          strokeWeight: 3
+        });
+  Polyline.setMap(map);
 
-  // Open info window on click of marker
+  //Open info window on click of marker
   myMarker.addListener('click', function() {
+    
+    var contentString = 
+  "<p>The nearest MBTA Red Line subway stop is " + nearestStop.name + " which is " + nearestStop.distance + " miles away from me.";    
+    infoWindow.setContent(contentString);
     infoWindow.open(map, myMarker);
   });  
+
 }
 
-//the function takes in the LatLng pair of the current locaion
-function nearestStop(currentLoc){   
+//the function takes a LatLng pair of my current location and return an object representating the nearest stop
+function calNearest(LatLng) {   
   var stopLatLng;
   var stop; 
   var distance = 0; 
@@ -154,15 +163,18 @@ function nearestStop(currentLoc){
     stopLatLng = new google.maps.LatLng({lat: stop.stop_lat, lng: stop.stop_lon});
     distance = google.maps.geometry.spherical.computeDistanceBetween(currentLoc, stopLatLng);
     if (distance < smallest) {
-      smallest = distance; 
+      smallest = distance;
       name = stop.stop_name;
+      LatLng = stopLatLng;
     } 
   }
+  smallest = (smallest*0.00062137).toPrecision(2);
 
   //https://stackoverflow.com/questions/12272239/javascript-function-returning-an-object
   return {
     name: name,
-    distance: smallest
+    distance: smallest,
+    LatLng : LatLng
   };
 }
 
