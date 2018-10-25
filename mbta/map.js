@@ -99,22 +99,18 @@ function renderStops(map) {
             title: stop["stop_name"]
             //zIndex: stop["stop_id"]   
           });
-          //2. add an event listener to the stop marker
-          google.maps.event.addListener(stopMarker, 'click', function () {
-                                contentString = getSchedule();
+          console.log("the i in the for loop is "+i);
+          console.log("the stop is" + stop.stop_name);
+         
+        //2. add an event listener to the stop marker
+          google.maps.event.addListener(stopMarker,'click', function () {
+                                contentString = getSchedule(stopMarker,stop);
+                                //infoWindow.setContent("hello!");
                                 infoWindow.setContent(contentString);
                                 infoWindow.open(map, this);
                             });
           }
 
-        /* add an event listener
-        stopMarker.addListener('click',function(){
-            contentString = getSchedule(stopMarker,stop);         //call function to add infoWindow event 
-            infoWindow.setContent(contentString); 
-            infoWindow.open(map,stopMarker);
-         
-        });
-         */
 }
 
 /*
@@ -207,53 +203,56 @@ function calNearest(LatLng) {
 }
 
 //pass in two variables (a marker and an object) and returns a string 
-function getSchedule(marker,object){
+function getSchedule(stopMarker, stop){
   console.log("Hi from function getSchedule!"); 
-  var requestURL = 'https://chicken-of-the-sea.herokuapp.com/redline/schedule.json?stop_id='+ object.stop_id;
+  var requestURL = 'https://chicken-of-the-sea.herokuapp.com/redline/schedule.json?stop_id='+ stop.stop_id;
+  console.log("the stop.stop_id is " + stop.stop_id);
   var request = new XMLHttpRequest();
   var parsed;
   var direction;
   var returnHTML= "";
   var contentString;
   //1 open 
-  request.open('GET', requestURL, true); //this works
+  request.open('GET', requestURL, true); 
   //2 event listener 
   request.onreadystatechange = function (){
     if (request.readyState == 4 && request.status == 200) {
       //3 fire off a request 
-      //console.log(request.responseText);
+      //console.log("request.responseText" + request.responseText);//works 
       parsed = JSON.parse(request.responseText); 
-      //console.log("not in the for loop yet"); //this is printed
-      //console.log("parsed.data.length is "+parsed.data.length);//this is 0, so the loop does not work
+      //console.log("not in the for loop yet"); //works 
+      //console.log("parsed.data.length is "+ parsed.data.length);//works 
       for (var i = 0; i < parsed.data.length; i++) {
-        //console.log("finally in the for loop"); //not printed, why not in the for loop???
-        console.log(i);
-        console.log(parsed[i].arrival_time);
+        //console.log("finally in the for loop"); //works
+        //console.log(i);
         if (parsed.data[i].attributes.direction_id == 0) {
             direction = "Northbound to Alewife";}
           else if (parsed.data[i].attributes.direction_id == 1){
             direction = "Southbound (to Ashmont/Braintree)";}
-        console.log(direction);
-        //returnHTML += "The next train "+ direction + "is arriving at " + parsed[i].arrival_time +;  
+        //console.log("direction is "+ direction); //works 
+        returnHTML += "<p>The next train "+ direction + " is arriving at " + parsed.data[i].attributes.arrival_time + ".</p>";  
           }
+          console.log("returnHTML is "+ returnHTML); //works
         }
+
         else if (request.readyState == 4 && request.status != 200) {
-          returnHTML = "Schedule not available.";
+          returnHTML = "<p>Schedule not available.</p>";
         }
         else if (request.readyState == 3) {
-          returnHTML = "Loading...";
+          returnHTML = "<p>Loading...</p>";
         }
-      };
-      console.log(returnHTML);
+
+      console.log("returnHTML is "+ returnHTML); 
       //4 send back the content 
       request.send();
-      //console.log(returnHTML);
+    
       contentString = 
-      "<h1>" + object.stop_name+ "</h1>" + "<table><tr><th>Upcoming Train</th><th>Direction</th></tr>"+ returnHTML;   
+      "<h1>" + stop.stop_name + "</h1>" + returnHTML ;   
       
-      console.log(contentString);
+      console.log("contentString is " + contentString);
+      };
       
-      return contentString;
+    
   }
 
 
