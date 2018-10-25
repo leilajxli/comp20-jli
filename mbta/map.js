@@ -9,8 +9,8 @@ var currentLoc = new google.maps.LatLng(currentLat, currentLng);
 var infoWindow = new google.maps.InfoWindow();
 
 var MBTAStops = 
-[
-  { "stop_name":"Alewife","stop_lat":42.395428,"stop_lon":-71.142483,"stop_id":"place-alfcl" },
+[ //[0]-[12] Path1
+  { "stop_name":"Alewife","stop_lat":42.395428,"stop_lon":-71.142483,"stop_id":"place-alfcl"},
   { "stop_name":"Davis","stop_lat":42.39674,"stop_lon":-71.121815,"stop_id":"place-davis" },
   { "stop_name":"Porter Square","stop_lat":42.3884,"stop_lon":-71.11914899999999,"stop_id":"place-portr" },
   { "stop_name":"Harvard Square","stop_lat":42.373362,"stop_lon":-71.118956,"stop_id":"place-harsq" },
@@ -23,16 +23,17 @@ var MBTAStops =
   { "stop_name":"Broadway","stop_lat":42.342622,"stop_lon":-71.056967,"stop_id":"place-brdwy" },
   { "stop_name":"Andrew","stop_lat":42.330154,"stop_lon":-71.057655,"stop_id":"place-andrw" },
   { "stop_name":"JFK/UMass","stop_lat":42.320685,"stop_lon":-71.052391,"stop_id":"place-jfk" },
-  { "stop_name":"North Quincy","stop_lat":42.275275,"stop_lon":-71.029583,"stop_id":"place-nqncy" },
-  { "stop_name":"Wollaston","stop_lat":42.2665139,"stop_lon":-71.0203369,"stop_id":"place-wlsta" },
-  { "stop_name":"Quincy Center","stop_lat":42.251809,"stop_lon":-71.005409,"stop_id":"place-qnctr" },
-  {"stop_name":"Quincy Adams","stop_lat":42.233391,"stop_lon":-71.007153,"stop_id":"place-qamnl" },
-  { "stop_name":"Braintree","stop_lat":42.2078543,"stop_lon":-71.0011385,"stop_id":"place-brntn" }
-
+  //[13]-[16] Path2
   { "stop_name":"Savin Hill","stop_lat":42.31129,"stop_lon":-71.053331,"stop_id":"place-shmnl" },
   { "stop_name":"Fields Corner","stop_lat":42.300093,"stop_lon":-71.061667,"stop_id":"place-fldcr" },
   { "stop_name":"Shawmut","stop_lat":42.29312583,"stop_lon":-71.06573796000001,"stop_id":"place-smmnl" },
-  { "stop_name":"Ashmont","stop_lat":42.284652,"stop_lon":-71.06448899999999,"stop_id":"place-asmnl" }
+  { "stop_name":"Ashmont","stop_lat":42.284652,"stop_lon":-71.06448899999999,"stop_id":"place-asmnl" },  
+  //[17]-[21] Path3
+  { "stop_name":"North Quincy","stop_lat":42.275275,"stop_lon":-71.029583,"stop_id":"place-nqncy" },
+  { "stop_name":"Wollaston","stop_lat":42.2665139,"stop_lon":-71.0203369,"stop_id":"place-wlsta" },
+  { "stop_name":"Quincy Center","stop_lat":42.251809,"stop_lon":-71.005409,"stop_id":"place-qnctr" },
+  { "stop_name":"Quincy Adams","stop_lat":42.233391,"stop_lon":-71.007153,"stop_id":"place-qamnl" },
+  { "stop_name":"Braintree","stop_lat":42.2078543,"stop_lon":-71.0011385,"stop_id":"place-brntn" }
 ];
 
 //https://developers.google.com/maps/documentation/javascript/geolocation
@@ -45,6 +46,7 @@ function initMap(){
       center: SouthStation   //centered on south station
     }
   );
+  addMarkers(map);
   getMyLocation();
 }
 
@@ -56,11 +58,8 @@ function getMyLocation(){
           navigator.geolocation.getCurrentPosition(function(position) {
               currentLat = position.coords.latitude;
               currentLng = position.coords.longitude;
-              renderMap();
+              whereIam();      //call funtion to find my current location
 
-            infoWindow.setPosition(currentLoc);
-            infoWindow.setContent('Find the nearest MBTA stop');
-            infoWindow.open(map);
             map.setCenter(currentLoc);
           }, function() {
             handleLocationError(true, infoWindow, map.getCenter());
@@ -80,64 +79,90 @@ function handleLocationError(browserHasGeolocation, infoWindow, currentLoc) {
         infoWindow.open(map);
       }
 
-function renderMap() {
-
-  currentLoc = new google.maps.LatLng(currentLat, currentLng);
-  //make the map object go to whereIam
-  map.panTo(currentLoc);
-  // set value to the declared marker variable 
-  myMarker = new google.maps.Marker({
-    position: currentLoc,
-    title: "This is where I am!"
-  });
-  myMarker.setMap(map); //this one can be google's default red marker 
-  // Open info window on click of marker
-  google.maps.event.addListener(myMarker, 'click', function() {
-    infoWindow.setContent(myMarker.title);
-    infoWindow.open(map, myMarker);
-  });
-
-  addMarkers(map);
-}
-
 //https://developers.google.com/maps/documentation/javascript/examples/icon-simple
 //https://developers.google.com/maps/documentation/javascript/examples/polyline-simple
 function addMarkers(map) {
          
         //icon downloaded from here: https://icons8.com/icon/set/signpost/all
         var image = 'signpost.png'; 
-        var PolylinePath =[];
-        
-        var redLine = new google.maps.Polyline({
-          //path: PolylinePath,
-          geodesic: true,
-          strokeColor: '#FF0000',
-          strokeOpacity: 1.0,
-          strokeWeight: 2
-        });
+        var stop;
+        var stopLatLng;
+        var stopMarker;
+        var PolylinePath = [];
 
-        redLine.setMap(map);
-
-        //each time, add a marker and line to the next stop;
-        for (var i = 0; i < 18; i++) {
-          var stop = MBTAStops[i];
-          var stopLatLng = new google.maps.LatLng({lat: stop["stop_lat"], lng: stop["stop_lon"]});
-          var stopMarker = new google.maps.Marker({
-            position: stopLatLng,
+        //add markers 
+        for (var i = 0; i < 22; i++) {
+          stop = MBTAStops[i];
+          stopMarker = new google.maps.Marker({
+            position: {lat: stop["stop_lat"], lng: stop["stop_lon"]},
             map: map,
             icon: image, 
             title: stop["stop_name"]
             //zIndex: stop["stop_id"]   
             });
-          PolylinePath = redLine.getPath(); //Return Value:  MVCArray<LatLng>, Retrieves the first path.
-          //console.log(redLine.getPath());
-          PolylinePath.push(stopLatLng); 
-          redLine.setMap(map);
+          //add the stop's coordinates to PolylinePath
+          stopLatLng = new google.maps.LatLng({lat: stop["stop_lat"], lng: stop["stop_lon"]});
+          PolylinePath.push(stopLatLng);
         }
 
-        console.log(PolylinePath);
+        //draw Polyine
+        var Polyline = new google.maps.Polyline({
+          path: PolylinePath,
+          geodesic: true,
+          strokeColor: '#FF0000',
+          strokeOpacity: 1.0,
+          strokeWeight: 2
+        });
+        Polyline.setMap(map);
 
-        
+  }
+
+function whereIam() {
+  currentLoc = new google.maps.LatLng(currentLat, currentLng);
+  //make the map object go to whereIam
+  map.panTo(currentLoc);
+  // set value to the declared marker variable 
+  myMarker = new google.maps.Marker({
+    position: currentLoc,
+    title: "This is where I am!",
+  });
+  myMarker.setMap(map); 
+
+  var contentString = 
+  "<p>The nearest MBTA Red Line subway stop is " + nearestStop(currentLoc).stop + " which is " 
+   + nearestStop().distance + " from me.";    
+             
+  infoWindow.setContent(contentString);
+
+  // Open info window on click of marker
+  myMarker.addListener('click', function() {
+    infoWindow.open(map, myMarker);
+  });  
+}
+
+//the function takes in the LatLng pair of the current locaion
+function nearestStop(currentLoc){   
+  var result;
+  var stopLatLng;
+  var stop; 
+
+  for (i = 0 ; i < 22; i++ ) {
+  stop = MBTAStops[i];
+  stopLatLng = new google.maps.LatLng({lat: stop["stop_lat"], lng: stop["stop_lon"]});
+  x = computeDistanceBetween(currentLoc, stopLatLng);
+  if x 
+  }
+
+  //var currentLoc = new google.maps.LatLng(currentLat, currentLng);   
+
+
+  result.stop = ;
+
+  result.distance = ;
+
+  return result;
+}
+
 
 /*
         stopMarker.setMap(map); //now each stop marker will be rendered on the map
@@ -149,8 +174,13 @@ function addMarkers(map) {
            //Opens this InfoWindow on the given map. 
           infoWindow.open(map, stopMarker);
         });
+
 */
 
-}
+//add an event handle to the marker
+          //stopMarker.addListener('click', function() {
+          //infowindow.open(map, marker);
+
+
 
 
