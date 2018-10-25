@@ -38,7 +38,8 @@ var MBTAStops =
 
 //Initialize and add the map
 //https://developers.google.com/maps/documentation/javascript/geolocation
-function initMap(){       
+function initMap(){    
+  console.log("Hi from function initMap!");   
   map = new google.maps.Map(
     document.getElementById("map"), {
       zoom: 13,              //city=10, streets=15
@@ -46,11 +47,13 @@ function initMap(){
     }
     );
   renderStops(map);
+  //renderRedline(map);
   getMyLocation();
 }
 
 //use the navigator object to get my current location 
 function getMyLocation(){
+  console.log("Hi from function getMyLocation!"); 
   //var marker = new google.maps.Marker ({position: SouthStation, map: map});
         if (navigator.geolocation) { // the navigator.geolocation object is supported on the browser
           navigator.geolocation.getCurrentPosition(function(position) {
@@ -77,17 +80,18 @@ function handleLocationError(browserHasGeolocation, infoWindow, currentLoc) {
   infoWindow.open(map);
 }
 
-//add Markers for all the MBTA stops and connect them with a polyline 
+//add Markers for all the MBTA stops, with an icon and an eventListener
 function renderStops(map) {
+  console.log("Hi from function renderStops!"); 
   var image = 'signpost.png'; 
   var stop = {};
   var stopLatLng;
   var stopMarker;
-  var PolylinePath = [];
-
-        //add markers 
+  var contentString = "";
+    
         for (var i = 0; i < 22; i++) {
           stop = MBTAStops[i];
+          //1. add a stop icon 
           stopMarker = new google.maps.Marker({
             position: {lat: stop["stop_lat"], lng: stop["stop_lon"]},
             map: map,
@@ -95,13 +99,32 @@ function renderStops(map) {
             title: stop["stop_name"]
             //zIndex: stop["stop_id"]   
           });
-          //call function to add infoWindow event 
-          getSchedule(stopMarker, stop,map);
-          //add the stop's coordinates to PolylinePath
+          //2. add an event listener to the stop marker
+          google.maps.event.addListener(stopMarker, 'click', function () {
+                                contentString = getSchedule();
+                                infoWindow.setContent(contentString);
+                                infoWindow.open(map, this);
+                            });
+          }
+
+        /* add an event listener
+        stopMarker.addListener('click',function(){
+            contentString = getSchedule(stopMarker,stop);         //call function to add infoWindow event 
+            infoWindow.setContent(contentString); 
+            infoWindow.open(map,stopMarker);
+         
+        });
+         */
+}
+
+/*
+function renderRedline(){
+  var PolylinePath = [];
+  var Polyline1, Polyline2, Polyline3; 
+
+//2. add the stop's coordinates to the PolylinePath
           stopLatLng = new google.maps.LatLng({lat: stop["stop_lat"], lng: stop["stop_lon"]});
           PolylinePath.push(stopLatLng);
-        }
-
         //draw Polyline
         var Polyline = new google.maps.Polyline({
           path: PolylinePath,
@@ -111,10 +134,16 @@ function renderStops(map) {
           strokeWeight: 2
         });
         Polyline.setMap(map);
-      }
+    
+*/
 
 //add a marker on my current location, infowindow and render it on the map 
 function renderMyMarker() {
+  var nearestStop;
+  var Polyline;
+  var contentString;
+
+  console.log("Hi from function renderMyMarker!"); 
   currentLoc = new google.maps.LatLng(currentLat, currentLng);
   //make the map object go to whereIam
   map.panTo(currentLoc);
@@ -126,29 +155,32 @@ function renderMyMarker() {
   myMarker.setMap(map); 
 
   //call the function to calculate the nearest MBTA stop, use an object to store the output 
-  var nearestStop = calNearest(currentLoc);
+  nearestStop = calNearest(currentLoc);
   //render a Polyline that connects current location marker to the nearest stop marker
-  var Polyline = new google.maps.Polyline({
+  Polyline = new google.maps.Polyline({
     path: [currentLoc,nearestStop.LatLng],
     geodesic: true,
     strokeColor: '#0000FF',
     strokeOpacity: 1.0,
     strokeWeight: 3
   });
+
   Polyline.setMap(map);
 
-  //Open info window on click of marker
-  myMarker.addListener('click', function() {
-    var contentString = 
-    "The nearest MBTA Red Line subway stop is " + nearestStop.name + " which is " + nearestStop.distance + " miles away from me.";    
-    infoWindow.setContent(contentString);
-    infoWindow.open(map, myMarker);
-  });  
+  //Add an event lister to my marker icon 
+  google.maps.event.addListener(myMarker, 'click', function () {
+  contentString = 
+  "The nearest MBTA Red Line subway stop is " + nearestStop.name + " which is " + nearestStop.distance + " miles away from me.";    
+  infoWindow.setContent(contentString);
+  infoWindow.open(map, myMarker);
+
+});  
 
 }
 
 //the function takes a LatLng pair of my current location and return an object representating the nearest stop
 function calNearest(LatLng) {   
+  console.log("Hi from function calNearest!"); 
   var stopLatLng;
   var stop; 
   var distance = 0; 
@@ -174,54 +206,54 @@ function calNearest(LatLng) {
   };
 }
 
-//pass in a marker, which is stopMarker, no output
-function getSchedule(marker,object,map){
-
+//pass in two variables (a marker and an object) and returns a string 
+function getSchedule(marker,object){
+  console.log("Hi from function getSchedule!"); 
   var requestURL = 'https://chicken-of-the-sea.herokuapp.com/redline/schedule.json?stop_id='+ object.stop_id;
   var request = new XMLHttpRequest();
   var parsed;
   var direction;
-  var returnHTML="";
+  var returnHTML= "";
   var contentString;
-
+  //1 open 
   request.open('GET', requestURL, true); //this works
-
+  //2 event listener 
   request.onreadystatechange = function (){
-
     if (request.readyState == 4 && request.status == 200) {
-      //console.log(request.readyState); //that's a 4 
-      parsed = JSON.parse(request.responseText); //Parse the data with JSON.parse(), and the data becomes a JavaScript object.
-      console.log(parsed);//that's an object, but the length is 0 
-      console.log("not in the for loop yet"); //this is printed
-      console.log("parsed.data.length is "+parsed.data.length);//this is 0, so the loop does not work
-      for (i=0;i<parsed.data.length; i++) {
-        console.log("finally in the for loop"); //not printed, why not in the for loop???
+      //3 fire off a request 
+      //console.log(request.responseText);
+      parsed = JSON.parse(request.responseText); 
+      //console.log("not in the for loop yet"); //this is printed
+      //console.log("parsed.data.length is "+parsed.data.length);//this is 0, so the loop does not work
+      for (var i = 0; i < parsed.data.length; i++) {
+        //console.log("finally in the for loop"); //not printed, why not in the for loop???
         console.log(i);
+        console.log(parsed[i].arrival_time);
         if (parsed.data[i].attributes.direction_id == 0) {
-          direction = "Northbound to Alewife";}
+            direction = "Northbound to Alewife";}
           else if (parsed.data[i].attributes.direction_id == 1){
             direction = "Southbound (to Ashmont/Braintree)";}
-            returnHTML += "<tr><td>"+parsed[i].arrival_time+"</td><td>" + direction + "</td></tr>";  
+        console.log(direction);
+        //returnHTML += "The next train "+ direction + "is arriving at " + parsed[i].arrival_time +;  
           }
         }
         else if (request.readyState == 4 && request.status != 200) {
-          schedule = "Schedule not available.";
+          returnHTML = "Schedule not available.";
         }
         else if (request.readyState == 3) {
-          schedule = "Loading...";
+          returnHTML = "Loading...";
         }
       };
-
-      request.send();
       console.log(returnHTML);
+      //4 send back the content 
+      request.send();
+      //console.log(returnHTML);
       contentString = 
-      "<h1>" + object.stop_name+ "</h1>" + "<table><tr><th>Upcoming Train</th><th>Direction</th></tr>"+ returnHTML +"</table>";   
+      "<h1>" + object.stop_name+ "</h1>" + "<table><tr><th>Upcoming Train</th><th>Direction</th></tr>"+ returnHTML;   
+      
       console.log(contentString);
-   // marker.addListener('click', function() {
-    marker.addListener('click',function(){
-      infoWindow.setContent(contentString);
-      infoWindow.open(map,marker);
-    });
+      
+      return contentString;
   }
 
 

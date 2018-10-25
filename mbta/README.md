@@ -2,11 +2,18 @@ Closest MBTA Station
 
 Created by Jiaxun Leila Li on October 20, 2018
 
-worked on this on Sunday for 2 hours; 
-worked on it on Monday for 7 hours:
+Worked 2 hours on Sunday; 
+Worked 7 hours on Monday;
 	13:30-15:00 - 1.5hr;
 	17:00-19:30 - 2.5hr;
 	21:00-24:00 - 3 hr;
+Worked 2 hours on Tuesday:
+	22:30-00:30;
+Worked 7 hours Wednesday;
+	5:30-7:30 - 2hr;
+	20:00-24:00 - 4hr;
+	00:00-1:00	- 1hr;
+Worked 
 
 Update on Monday 23:55, renders map, myMarker, but no stopMarker, maybe due to the JSON string/object.
 
@@ -31,6 +38,7 @@ Dodged:
 Questions: 
 Should the nearest stop be calculated after clicking my location marker or after loading my location? I did the former to save loading time. --> resolved
 What is this: zIndex: stop["stop_id"] 
+Why is my code so unnecessarily convoluted? 
 
 Mind map: 
 <iframe width='853' height='480' src='https://embed.coggle.it/diagram/W86XHeExeUO3X1qn/4c3714a0d68f4caccc2e819c13c5811e95de854cfac76002c5fec62702981cbd' frameborder='0' allowfullscreen></iframe>
@@ -44,6 +52,8 @@ https://stackoverflow.com/questions/20736034/loop-over-an-object-and-return-lowe
 https://stackoverflow.com/questions/12272239/javascript-function-returning-an-object
 https://developers.google.com/maps/documentation/javascript/examples/icon-simple
 https://developers.google.com/maps/documentation/javascript/examples/polyline-simple
+https://github.com/tuftsdev/WebProgramming/blob/gh-pages/examples/ajax/messages.html
+https://www.w3schools.com/html/html_tables.asp
 
 Icon downloaded from here: https://icons8.com/icon/set/signpost/all
 
