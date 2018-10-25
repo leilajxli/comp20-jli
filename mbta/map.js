@@ -8,10 +8,10 @@ var currentLoc = new google.maps.LatLng(currentLat, currentLng);
 
 var infoWindow = new google.maps.InfoWindow();
 
-var markerCollection = [];
+//var markerCollection = [];
 
 var MBTAStops = 
-[ 
+[ //[0]-[12]
 { "stop_name":"Alewife","stop_lat":42.395428,"stop_lon":-71.142483,"stop_id":"place-alfcl"},
 { "stop_name":"Davis","stop_lat":42.39674,"stop_lon":-71.121815,"stop_id":"place-davis" },
 { "stop_name":"Porter Square","stop_lat":42.3884,"stop_lon":-71.11914899999999,"stop_id":"place-portr" },
@@ -25,12 +25,12 @@ var MBTAStops =
 { "stop_name":"Broadway","stop_lat":42.342622,"stop_lon":-71.056967,"stop_id":"place-brdwy" },
 { "stop_name":"Andrew","stop_lat":42.330154,"stop_lon":-71.057655,"stop_id":"place-andrw" },
 { "stop_name":"JFK/UMass","stop_lat":42.320685,"stop_lon":-71.052391,"stop_id":"place-jfk" },
-
+//[13]-[16]
 { "stop_name":"Savin Hill","stop_lat":42.31129,"stop_lon":-71.053331,"stop_id":"place-shmnl" },
 { "stop_name":"Fields Corner","stop_lat":42.300093,"stop_lon":-71.061667,"stop_id":"place-fldcr" },
 { "stop_name":"Shawmut","stop_lat":42.29312583,"stop_lon":-71.06573796000001,"stop_id":"place-smmnl" },
 { "stop_name":"Ashmont","stop_lat":42.284652,"stop_lon":-71.06448899999999,"stop_id":"place-asmnl" },  
-
+//[17]-[21]
 { "stop_name":"North Quincy","stop_lat":42.275275,"stop_lon":-71.029583,"stop_id":"place-nqncy" },
 { "stop_name":"Wollaston","stop_lat":42.2665139,"stop_lon":-71.0203369,"stop_id":"place-wlsta" },
 { "stop_name":"Quincy Center","stop_lat":42.251809,"stop_lon":-71.005409,"stop_id":"place-qnctr" },
@@ -42,6 +42,7 @@ var MBTAStops =
 //https://developers.google.com/maps/documentation/javascript/geolocation
 function initMap(){    
   console.log("Hi from function initMap!");   
+
   map = new google.maps.Map(
     document.getElementById("map"), {
       zoom: 13,              //city=10, streets=15
@@ -49,20 +50,19 @@ function initMap(){
     }
     );
   renderStops();
-  //renderRedline(map);
+  renderRedline(); 
   getMyLocation();
 }
 
 //use the navigator object to get my current location 
 function getMyLocation(){
   console.log("Hi from function getMyLocation!"); 
-  //var marker = new google.maps.Marker ({position: SouthStation, map: map});
+  var marker = new google.maps.Marker ({position: SouthStation, map: map});
         if (navigator.geolocation) { // the navigator.geolocation object is supported on the browser
           navigator.geolocation.getCurrentPosition(function(position) {
             currentLat = position.coords.latitude;
             currentLng = position.coords.longitude;
               renderMyMarker();      //call funtion to render my marker
-
               map.setCenter(currentLoc);
             }, function() {
               handleLocationError(true, infoWindow, map.getCenter());
@@ -71,7 +71,7 @@ function getMyLocation(){
           // Browser doesn't support Geolocation
           handleLocationError(false, infoWindow, map.getCenter());
         }
-      }
+}
 
 //display an infoWindow if the Geolocation service failed.
 function handleLocationError(browserHasGeolocation, infoWindow, currentLoc) {
@@ -86,67 +86,88 @@ function handleLocationError(browserHasGeolocation, infoWindow, currentLoc) {
 function renderStops() {
   console.log("Hi from function renderStops!"); 
   
-    var stop = {};
-    var stopMarker; 
-
+    var stopObj = {};
+    
         for (var i = 0; i < 22; i++) {
-          stop = MBTAStops[i];
-          stopMarker = createMarker(stop);
-          console.log("the i in the for loop is "+i);
-          markerCollection.push(stopMarker);
+          stopObj = MBTAStops[i];
+          createMarker(stopObj);  
         }
-        
 }
 
-//this function takes in an object, returns a marker object 
-function createMarker(stop){
-
+//this function takes in an object, creates a marker on the map 
+function createMarker(stopObj){
 console.log("hello from the createMarker function!!!!");
 
   var image = 'signpost.png'; 
-  var marker;
-  var contentString;
-  var stop_id = stop["stop_id"];
+  var stopMarker;
+  var stop_id = stopObj["stop_id"];
 
-  marker = new google.maps.Marker({
-    position: {lat: stop["stop_lat"], lng: stop["stop_lon"]},
+  stopMarker = new google.maps.Marker({
+    position: {lat: stopObj["stop_lat"], lng: stopObj["stop_lon"]},
     map: map,
     icon: image, 
-    title: stop["stop_name"]   
+    title: stopObj["stop_name"]   
   });
-  google.maps.event.addListener(marker, 'click', function() { 
-   //contentString = "<h1>" + stop["stop_name"] + "</h1>";
-   console.log(contentString);
-   contentString = getSchedule(stop_id);
-   console.log("the stop_id is " + stop_id);
-   console.log("the return value of the getSchedule function is "+ contentString);
-   infoWindow.open(map, this);
-   infoWindow.setContent(contentString);
- }); 
 
-  return marker;
+  google.maps.event.addListener(stopMarker, 'click', function() { 
+    getSchedule(stop_id, stopMarker);
+ }); 
 }
 
-/*
 function renderRedline(){
-  var PolylinePath = [];
-  var Polyline1, Polyline2, Polyline3; 
-  var stopLatLng;
+  
+var PolylinePath1, PolylinePath2, PolylinePath3; 
+var Polyline1, Polyline2, Polyline3; 
 
-//2. add the stop's coordinates to the PolylinePath
-          stopLatLng = new google.maps.LatLng({lat: stop["stop_lat"], lng: stop["stop_lon"]});
-          PolylinePath.push(stopLatLng);
-        //draw Polyline
-        var Polyline = new google.maps.Polyline({
-          path: PolylinePath,
-          geodesic: true,
-          strokeColor: '#FF0000',
-          strokeOpacity: 1.0,
-          strokeWeight: 2
-        });
-        Polyline.setMap(map);
-    
-*/
+  //MBTA[0]-[12] from Alewife to JFK
+  PolylinePath1 = [];
+  for (var a=0; a<13; a++){
+    var stop1 = MBTAStops[a];
+    var stopLatLng1 = new google.maps.LatLng({lat: stop1["stop_lat"], lng: stop1["stop_lon"]});
+  PolylinePath1.push(stopLatLng1);
+  }
+  Polyline1 = new google.maps.Polyline({
+    path: PolylinePath1,
+    geodesic: true, 
+    strokeColor: '#FF0000',
+    strokeOpacity: 1.0,
+    strokeWeight: 2 
+  });
+  Polyline1.setMap(map);
+  
+  //MBTA[13]-[16] from JFK to Ashmont
+  PolylinePath2 = [{lat:42.320685,lng:-71.052391}];
+  for (var b=13; b<17; b++){
+    var stop2 = MBTAStops[b];
+    var stopLatLng2 = new google.maps.LatLng({lat: stop2["stop_lat"], lng: stop2["stop_lon"]});
+  PolylinePath2.push(stopLatLng2);
+  }
+  Polyline2 = new google.maps.Polyline({
+    path: PolylinePath2,
+    geodesic: true, 
+    strokeColor: '#FF0000',
+    strokeOpacity: 1.0,
+    strokeWeight: 2 
+  });
+  Polyline2.setMap(map);
+
+  //MBTA[17]-[21] from JFK to Braintree
+  PolylinePath3 = [{lat:42.320685,lng:-71.052391}];
+  for (var c=17; c<22; c++){
+    var stop3 = MBTAStops[c];
+    var stopLatLng3 = new google.maps.LatLng({lat: stop3["stop_lat"], lng: stop3["stop_lon"]});
+  PolylinePath3.push(stopLatLng3);
+  }
+  Polyline3 = new google.maps.Polyline({
+    path: PolylinePath3,
+    geodesic: true, 
+    strokeColor: '#FF0000',
+    strokeOpacity: 1.0,
+    strokeWeight: 2 
+  });
+  Polyline3.setMap(map);
+
+}  
 
 //add a marker on my current location, infowindow and render it on the map 
 function renderMyMarker() {
@@ -189,7 +210,6 @@ function renderMyMarker() {
 
 }
 
-
 //the function takes a LatLng pair of my current location and return an object representating the nearest stop
 function calNearest(LatLng) {   
   console.log("Hi from function calNearest!"); 
@@ -219,75 +239,58 @@ function calNearest(LatLng) {
 }
 
 //this function takes in a string (stop_id) returns a string(schedule of upcoming trains)
-function getSchedule(string){
+function getSchedule(stop_id, marker){
 
-  console.log("Hi from function getSchedule!"); 
-  
   var requestURL = "https://chicken-of-the-sea.herokuapp.com/redline/schedule.json?stop_id="+ string;
   var request; 
   var parsed;
   var direction; 
   var returnHTML = "";
   var contentString;
-  //1 open 
+  var infoWindow1 = new google.maps.InfoWindow();
+  
   request = new XMLHttpRequest();
+
   request.open("GET", requestURL, true); 
   
-  //console.log("the requestURL is "+ requestURL);
-  //console.log("the readyState is " + request.readyState + " the status is "+ request.status);
-  
-  //2 event listener 
   request.onreadystatechange = function (){
-    console.log("the readyState is " + request.readyState + " the status is "+ request.status);
-    
+   
     if (request.readyState == 4 && request.status == 200) {
-      //3 fire off a request 
-      console.log("in the if statement");//works 
-      
       parsed = JSON.parse(request.responseText); 
-      
-      console.log("not in the for loop yet"); //works 
-      console.log("parsed.data.length is "+ parsed.data.length);//works 
-      
-      for (var i = 0; i < parsed.data.length; i++) {
-        console.log("finally in the for loop"); //works
-        //console.log(i);
-        if (parsed.data[i].attributes.direction_id == 0) {
-          direction = "Northbound to Alewife";
-        }
-        else if (parsed.data[i].attributes.direction_id == 1){
-          direction = "Southbound to Ashmont/Braintree";
-        }
+  
+        for (var i = 0; i < parsed.data.length; i++) {
+    
+          if (parsed.data[i].attributes.direction_id == 0) {
+            direction = "Northbound to Alewife";
+          }
+          else if (parsed.data[i].attributes.direction_id == 1){
+            direction = "Southbound to Ashmont/Braintree";
+          }
 
-        //console.log("direction is "+ direction); //works 
-        returnHTML += "<p>The next train "+ direction + " is arriving at " + parsed.data[i].attributes.arrival_time + ".</p>";  
-      }
-console.log("returnHTML is "+ returnHTML + " but typeof the return result is "+ typeof returnHTML); 
-
-      return returnHTML;
+          returnHTML += "<p>The next train "+ direction + " is arriving at " + parsed.data[i].attributes.arrival_time + ".</p>";  
+        }
+      
+      contentString = "<h1>" + stop["stop_name"] + "</h1>" + returnHTML; 
+  
+      infoWindow1.setContent(contentString);
+      infoWindow1.open(map, marker);
+        
     }
 
     else if (request.readyState == 4 && request.status != 200) {
         returnHTML = "<p>Schedule not available.</p>";
-        console.log("returnHTML is "+ returnHTML + " but typeof the return result is "+ typeof returnHTML); 
-
-      return returnHTML;
+        //return returnHTML; 
     }
 
     else if (request.readyState == 3) {
-      returnHTML = "<p>Loading...</p>";
+        returnHTML = "<p>Loading...</p>";
+        //return returnHTML; 
     }
-    console.log("the readyState is " + request.readyState + " the status is "+ request.status);
-    console.log("returnHTML is "+ returnHTML); 
-    console.log("returnHTML is "+ returnHTML + " but typeof the return result is "+ typeof returnHTML); 
 
-      return returnHTML;
-  
-    };
-
+  };
       //4 send back the content 
-      request.send();
+  request.send();
 
-    }
+}
 
 
