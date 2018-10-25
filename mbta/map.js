@@ -116,7 +116,6 @@ function addMarkers(map) {
         Polyline.setMap(map);
 
   }
-
 function whereIam() {
   currentLoc = new google.maps.LatLng(currentLat, currentLng);
   //make the map object go to whereIam
@@ -129,8 +128,9 @@ function whereIam() {
   myMarker.setMap(map); 
 
   var contentString = 
-  "<p>The nearest MBTA Red Line subway stop is " + nearestStop(currentLoc).stop + " which is " 
-   + nearestStop().distance + " from me.";    
+  "<p>The nearest MBTA Red Line subway stop is " + nearestStop(currentLoc).name + " which is " + nearestStop(currentLoc).distance + " from me.";    
+  console.log(nearestStop(currentLoc));
+  console.log (contentString);
              
   infoWindow.setContent(contentString);
 
@@ -142,27 +142,29 @@ function whereIam() {
 
 //the function takes in the LatLng pair of the current locaion
 function nearestStop(currentLoc){   
-  var result;
   var stopLatLng;
   var stop; 
+  var distance = 0; 
+  var name = "";
+  var smallest = Infinity; 
 
-  for (i = 0 ; i < 22; i++ ) {
-  stop = MBTAStops[i];
-  stopLatLng = new google.maps.LatLng({lat: stop["stop_lat"], lng: stop["stop_lon"]});
-  x = computeDistanceBetween(currentLoc, stopLatLng);
-  if x 
+  //https://stackoverflow.com/questions/20736034/loop-over-an-object-and-return-lowest-number-in-javascript
+  for (var i in MBTAStops) {
+    stop = MBTAStops[i];
+    stopLatLng = new google.maps.LatLng({lat: stop.stop_lat, lng: stop.stop_lon});
+    distance = google.maps.geometry.spherical.computeDistanceBetween(currentLoc, stopLatLng);
+    if (distance < smallest) {
+      smallest = distance; 
+      name = stop.stop_name;
+    } 
   }
 
-  //var currentLoc = new google.maps.LatLng(currentLat, currentLng);   
-
-
-  result.stop = ;
-
-  result.distance = ;
-
-  return result;
+  //https://stackoverflow.com/questions/12272239/javascript-function-returning-an-object
+  return {
+    name: name,
+    distance: smallest
+  };
 }
-
 
 /*
         stopMarker.setMap(map); //now each stop marker will be rendered on the map

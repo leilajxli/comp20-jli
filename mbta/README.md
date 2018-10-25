@@ -34,3 +34,15 @@ Dodged:
 Mind map: 
 <iframe width='853' height='480' src='https://embed.coggle.it/diagram/W86XHeExeUO3X1qn/4c3714a0d68f4caccc2e819c13c5811e95de854cfac76002c5fec62702981cbd' frameborder='0' allowfullscreen></iframe>
 
+Code Cited: 
+https://github.com/tuftsdev/WebProgramming/blob/gh-pages/examples/google_maps/geolocation_map.html
+https://developers.google.com/maps/documentation/javascript/geolocation
+https://developers.google.com/maps/documentation/javascript/geolocation
+https://developers.google.com/maps/documentation/javascript/examples/map-simple
+icon downloaded from here: https://icons8.com/icon/set/signpost/all
+https://stackoverflow.com/questions/20736034/loop-over-an-object-and-return-lowest-number-in-javascript
+https://stackoverflow.com/questions/12272239/javascript-function-returning-an-object
+https://developers.google.com/maps/documentation/javascript/examples/icon-simple
+https://developers.google.com/maps/documentation/javascript/examples/polyline-simple
+
+
