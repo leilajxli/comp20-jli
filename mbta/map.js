@@ -8,6 +8,8 @@ var currentLoc = new google.maps.LatLng(currentLat, currentLng);
 
 var infoWindow = new google.maps.InfoWindow();
 
+var markerCollection = [];
+
 var MBTAStops = 
 [ 
 { "stop_name":"Alewife","stop_lat":42.395428,"stop_lon":-71.142483,"stop_id":"place-alfcl"},
@@ -46,7 +48,7 @@ function initMap(){
       center: SouthStation   //centered on south station
     }
     );
-  renderStops(map);
+  renderStops();
   //renderRedline(map);
   getMyLocation();
 }
@@ -81,42 +83,52 @@ function handleLocationError(browserHasGeolocation, infoWindow, currentLoc) {
 }
 
 //add Markers for all the MBTA stops, with an icon and an eventListener
-function renderStops(map) {
+function renderStops() {
   console.log("Hi from function renderStops!"); 
-  var image = 'signpost.png'; 
-  var stop = {};
-  var stopLatLng;
-  var stopMarker;
-  var contentString = "";
-    
+  
+    var stop = {};
+    var stopMarker; 
+
         for (var i = 0; i < 22; i++) {
           stop = MBTAStops[i];
-          //1. add a stop icon 
-          stopMarker = new google.maps.Marker({
-            position: {lat: stop["stop_lat"], lng: stop["stop_lon"]},
-            map: map,
-            icon: image, 
-            title: stop["stop_name"]
-            //zIndex: stop["stop_id"]   
-          });
+          stopMarker = createMarker(stop);
           console.log("the i in the for loop is "+i);
-          console.log("the stop is" + stop.stop_name);
-         
-        //2. add an event listener to the stop marker
-          google.maps.event.addListener(stopMarker,'click', function () {
-                                contentString = getSchedule(stopMarker,stop);
-                                //infoWindow.setContent("hello!");
-                                infoWindow.setContent(contentString);
-                                infoWindow.open(map, this);
-                            });
-          }
+          markerCollection.push(stopMarker);
+        }
+        
+}
 
+//this function takes in an object, returns a marker object 
+function createMarker(stop){
+
+console.log("hello from the createMarker function!!!!");
+
+  var image = 'signpost.png'; 
+  var marker;
+  var contentString = "";
+  var stop_id = stop["stop_id"];
+
+  marker = new google.maps.Marker({
+    position: {lat: stop["stop_lat"], lng: stop["stop_lon"]},
+    map: map,
+    icon: image, 
+    title: stop["stop_name"]   
+  });
+  google.maps.event.addListener(marker, 'click', function() { 
+   contentString = getSchedule(stop_id);
+   infoWindow.open(map, this);
+   infoWindow.setContent(contentString);
+   //infoWindow.setContent("hello!");
+ }); 
+
+  return marker;
 }
 
 /*
 function renderRedline(){
   var PolylinePath = [];
   var Polyline1, Polyline2, Polyline3; 
+  var stopLatLng;
 
 //2. add the stop's coordinates to the PolylinePath
           stopLatLng = new google.maps.LatLng({lat: stop["stop_lat"], lng: stop["stop_lon"]});
@@ -174,6 +186,7 @@ function renderMyMarker() {
 
 }
 
+
 //the function takes a LatLng pair of my current location and return an object representating the nearest stop
 function calNearest(LatLng) {   
   console.log("Hi from function calNearest!"); 
@@ -202,26 +215,27 @@ function calNearest(LatLng) {
   };
 }
 
-//pass in two variables (a marker and an object) and returns a string 
-function getSchedule(stopMarker, stop){
+//this function takes in a string (stop_id) returns a string 
+function getSchedule(string){
   console.log("Hi from function getSchedule!"); 
-  var requestURL = 'https://chicken-of-the-sea.herokuapp.com/redline/schedule.json?stop_id='+ stop.stop_id;
-  console.log("the stop.stop_id is " + stop.stop_id);
+  var requestURL = 'https://chicken-of-the-sea.herokuapp.com/redline/schedule.json?stop_id='+ string;
   var request = new XMLHttpRequest();
   var parsed;
-  var direction;
+  var direction; 
   var returnHTML= "";
   var contentString;
   //1 open 
   request.open('GET', requestURL, true); 
+  console.log("the requestURL is "+requestURL);
+  console.log("the readyState is" + request.readyState + " the status is "+request.status);
   //2 event listener 
   request.onreadystatechange = function (){
     if (request.readyState == 4 && request.status == 200) {
       //3 fire off a request 
-      //console.log("request.responseText" + request.responseText);//works 
+      console.log("request.responseText" + request.responseText);//works 
       parsed = JSON.parse(request.responseText); 
-      //console.log("not in the for loop yet"); //works 
-      //console.log("parsed.data.length is "+ parsed.data.length);//works 
+      console.log("not in the for loop yet"); //works 
+      console.log("parsed.data.length is "+ parsed.data.length);//works 
       for (var i = 0; i < parsed.data.length; i++) {
         //console.log("finally in the for loop"); //works
         //console.log(i);
@@ -234,7 +248,6 @@ function getSchedule(stopMarker, stop){
           }
           console.log("returnHTML is "+ returnHTML); //works
         }
-
         else if (request.readyState == 4 && request.status != 200) {
           returnHTML = "<p>Schedule not available.</p>";
         }
@@ -251,7 +264,7 @@ function getSchedule(stopMarker, stop){
       
       console.log("contentString is " + contentString);
       };
-      
+      return contentString;
     
   }
 

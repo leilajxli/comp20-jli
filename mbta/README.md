@@ -54,6 +54,7 @@ https://developers.google.com/maps/documentation/javascript/examples/icon-simple
 https://developers.google.com/maps/documentation/javascript/examples/polyline-simple
 https://github.com/tuftsdev/WebProgramming/blob/gh-pages/examples/ajax/messages.html
 https://www.w3schools.com/html/html_tables.asp
+https://stackoverflow.com/questions/30601246/add-event-listeners-to-several-map-markers
 
 Icon downloaded from here: https://icons8.com/icon/set/signpost/all
 
