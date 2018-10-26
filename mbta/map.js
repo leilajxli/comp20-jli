@@ -7,8 +7,7 @@ var currentLng = 0;
 var currentLoc = new google.maps.LatLng(currentLat, currentLng);  
 
 var infoWindow = new google.maps.InfoWindow();
-
-//var markerCollection = [];
+var infoWindowStop = new google.maps.InfoWindow();
 
 var MBTAStops = 
 [ //[0]-[12]
@@ -38,15 +37,12 @@ var MBTAStops =
 { "stop_name":"Braintree","stop_lat":42.2078543,"stop_lon":-71.0011385,"stop_id":"place-brntn" }
 ];
 
-//Initialize and add the map
-//https://developers.google.com/maps/documentation/javascript/geolocation
+//initiatialize, center on south station
 function initMap(){    
-  console.log("Hi from function initMap!");   
-
   map = new google.maps.Map(
     document.getElementById("map"), {
-      zoom: 13,              //city=10, streets=15
-      center: SouthStation   //centered on south station
+      zoom: 13,              
+      center: SouthStation   
     }
     );
   renderStops();
@@ -54,21 +50,19 @@ function initMap(){
   getMyLocation();
 }
 
-//use the navigator object to get my current location 
+//use the navigator object to get user location
 function getMyLocation(){
-  console.log("Hi from function getMyLocation!"); 
   var marker = new google.maps.Marker ({position: SouthStation, map: map});
-        if (navigator.geolocation) { // the navigator.geolocation object is supported on the browser
+        if (navigator.geolocation) { 
           navigator.geolocation.getCurrentPosition(function(position) {
             currentLat = position.coords.latitude;
             currentLng = position.coords.longitude;
-              renderMyMarker();      //call funtion to render my marker
+              renderMyMarker();      
               map.setCenter(currentLoc);
             }, function() {
               handleLocationError(true, infoWindow, map.getCenter());
             });
         } else {
-          // Browser doesn't support Geolocation
           handleLocationError(false, infoWindow, map.getCenter());
         }
 }
@@ -84,10 +78,7 @@ function handleLocationError(browserHasGeolocation, infoWindow, currentLoc) {
 
 //add Markers for all the MBTA stops, with an icon and an eventListener
 function renderStops() {
-  console.log("Hi from function renderStops!"); 
-  
     var stopObj = {};
-    
         for (var i = 0; i < 22; i++) {
           stopObj = MBTAStops[i];
           createMarker(stopObj);  
@@ -96,11 +87,10 @@ function renderStops() {
 
 //this function takes in an object, creates a marker on the map 
 function createMarker(stopObj){
-console.log("hello from the createMarker function!!!!");
-
   var image = 'signpost.png'; 
   var stopMarker;
   var stop_id = stopObj["stop_id"];
+  var stop_name = stopObj["stop_name"];
 
   stopMarker = new google.maps.Marker({
     position: {lat: stopObj["stop_lat"], lng: stopObj["stop_lon"]},
@@ -110,7 +100,7 @@ console.log("hello from the createMarker function!!!!");
   });
 
   google.maps.event.addListener(stopMarker, 'click', function() { 
-    getSchedule(stop_id, stopMarker);
+    getSchedule(stop_id, stopMarker, stop_name);
  }); 
 }
 
@@ -175,7 +165,6 @@ function renderMyMarker() {
   var Polyline;
   var contentString;
 
-  console.log("Hi from function renderMyMarker!"); 
   currentLoc = new google.maps.LatLng(currentLat, currentLng);
   //make the map object go to whereIam
   map.panTo(currentLoc);
@@ -212,7 +201,6 @@ function renderMyMarker() {
 
 //the function takes a LatLng pair of my current location and return an object representating the nearest stop
 function calNearest(LatLng) {   
-  console.log("Hi from function calNearest!"); 
   var stopLatLng;
   var stop; 
   var distance = 0; 
@@ -239,15 +227,16 @@ function calNearest(LatLng) {
 }
 
 //this function takes in a string (stop_id) returns a string(schedule of upcoming trains)
-function getSchedule(stop_id, marker){
+function getSchedule(stop_id, stopMarker,stop_name){
 
-  var requestURL = "https://chicken-of-the-sea.herokuapp.com/redline/schedule.json?stop_id="+ string;
+  var requestURL = "https://chicken-of-the-sea.herokuapp.com/redline/schedule.json?stop_id="+ stop_id;
   var request; 
   var parsed;
   var direction; 
-  var returnHTML = "";
+  var returnHTML;
   var contentString;
-  var infoWindow1 = new google.maps.InfoWindow();
+  var direction_id;
+  var arrival_time;
   
   request = new XMLHttpRequest();
 
@@ -257,38 +246,43 @@ function getSchedule(stop_id, marker){
    
     if (request.readyState == 4 && request.status == 200) {
       parsed = JSON.parse(request.responseText); 
-  
-        for (var i = 0; i < parsed.data.length; i++) {
     
-          if (parsed.data[i].attributes.direction_id == 0) {
-            direction = "Northbound to Alewife";
-          }
-          else if (parsed.data[i].attributes.direction_id == 1){
-            direction = "Southbound to Ashmont/Braintree";
-          }
+        for (var i = 0; i < parsed.data.length; i++) {
+            direction_id = parsed.data[i].attributes.direction_id;
+            arrival_time = parsed.data[i].attributes.arrival_time;
+            var timeObj = new Date (arrival_time);
+            var time_return = timeObj.toLocaleTimeString('en-US');
+            
+            if (direction_id == 0) {
+              direction = "Northbound to Alewife";
+            }
+            else if (direction_id == 1){
+              direction = "Southbound to Ashmont/Braintree";
+            }
 
-          returnHTML += "<p>The next train "+ direction + " is arriving at " + parsed.data[i].attributes.arrival_time + ".</p>";  
+            if (arrival_time != null) {
+            //returnHTML += "<p>The next train "+ direction + " is arriving at " + arrival_time + ".</p>";
+            returnHTML += "<p>The next train "+ direction + " is arriving at " + time_return + ".</p>"; 
+            } 
         }
       
-      contentString = "<h1>" + stop["stop_name"] + "</h1>" + returnHTML; 
+      contentString = "<h1>" + stop_name + "</h1>" + returnHTML; 
   
-      infoWindow1.setContent(contentString);
-      infoWindow1.open(map, marker);
+      infoWindowStop.setContent(contentString);
+      infoWindowStop.open(map, stopMarker);
         
     }
 
     else if (request.readyState == 4 && request.status != 200) {
         returnHTML = "<p>Schedule not available.</p>";
-        //return returnHTML; 
     }
 
     else if (request.readyState == 3) {
-        returnHTML = "<p>Loading...</p>";
-        //return returnHTML; 
+        returnHTML = "<p>Upcoming trains:</p>";
     }
 
   };
-      //4 send back the content 
+
   request.send();
 
 }

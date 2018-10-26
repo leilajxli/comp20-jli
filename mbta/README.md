@@ -1,6 +1,10 @@
 Closest MBTA Station 
 
 Created by Jiaxun Leila Li on October 20, 2018
+Last modified on 20:37PM, October 25, 2018
+
+Special thanks to: 
+Michael Robinson, Robert Yang, Rifat Ralfi Salhon, Phil Zijian Wang, Steph Zhaoying Xu and ofc, Ming Chow! 
 
 Worked 2 hours on Sunday; 
 Worked 7 hours on Monday;
@@ -13,9 +17,10 @@ Worked 7 hours Wednesday;
 	5:30-7:30 - 2hr;
 	20:00-24:00 - 4hr;
 	00:00-1:00	- 1hr;
-Worked 
+Worked 7 hours on Thursday; 
+	1:30-8:30 -7hr;
 
-Update on Monday 23:55, renders map, myMarker, but no stopMarker, maybe due to the JSON string/object.
+In total, I have worked on this assignment for 35 hours. 
 
 Correctly implemented: 
 (1 point) The basics (proper repository folder name, 1 CSS file, map on entire page, separate file for JavaScript)
@@ -25,10 +30,11 @@ Correctly implemented:
 (2 points) Determine and mark your location on the map; map is automatically centered to your location when determined
 (2 points) Note the closest MBTA Red Line subway station from where you are (e.g., upon clicking on marker of where you are)
 (1 point) Polyline connecting your marker to the closest MBTA Red Line subway station
-
-Not implemented: 
 (2 points) Render a red polyline connecting each station, thus showing the complete Red Line on the map
 (4 points) Upon clicking on a MBTA Red Line subway station marker, display an infowindow of the schedule of upcoming trains for that station
+
+Not implemented: 
+Make it prettier? 
 
 Dodged: 
 (-5 points) Nonsense Git commit messages or did not commit much.
@@ -55,6 +61,7 @@ https://developers.google.com/maps/documentation/javascript/examples/polyline-si
 https://github.com/tuftsdev/WebProgramming/blob/gh-pages/examples/ajax/messages.html
 https://www.w3schools.com/html/html_tables.asp
 https://stackoverflow.com/questions/30601246/add-event-listeners-to-several-map-markers
+https://timestamp.online/article/how-to-convert-timestamp-to-datetime-in-javascript
 
 Icon downloaded from here: https://icons8.com/icon/set/signpost/all
 
