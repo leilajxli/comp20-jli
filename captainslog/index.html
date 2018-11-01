@@ -15,20 +15,28 @@
         var message = $ ('#msg').val();
         localStorage.setItem( 'msg', message ); 
         var value = localStorage.getItem('msg');
-
 */
 
-$( "input" )
-  .display(function() {
-    var message = $( this ).val();
-    localStorage.setItem( 'msg', message ); 
-    $( "div" ).text( localStorage.getItem("msg") );
-  })
-  .display();
 
-    });
+    var trigger = jQuery.Event ("keydown", { keyCode: 13 });
+
+    ////https://api.jquery.com/val/
+    var message = $( "input" ).val();
+
+       
+    //https://api.jquery.com/trigger/
+    $( "input" ).on( trigger, function {
+        localStorage.setItem( 'msg', message );
+        $("#log").text (localStorage.getItem("msg"); 
+    }); 
+
+        // display (function() {
+        // $( "div" ).text( localStorage.getItem("msg") );
+        // })
+        // .display();
 
 
+}
 
     </script>
 </head>
