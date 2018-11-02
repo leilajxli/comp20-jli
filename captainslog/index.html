@@ -11,35 +11,31 @@
 
     $(document).ready( function() {
     
-        //var pressEnter = jQuery.Event ("keydown", { keyCode: 13 });  
         var messages = localStorage.getItem("messages");
         // messages is a string object that stores the stringified array of values stored in the localStorage 
 
         if ( messages ) {
             messages = JSON.parse(localStorage.getItem("messages")); 
-            //make it an object again
-            console.log("outside of the for loop");
+            //parse the string into an object again
             for (var i = messages.length - 1; i >= 0; i--) {
                 $("#log").append ("<p>" + messages[i] + "</p>"); 
-                console.log("in the for loop");
             };
         } else {
             messages = [];
-            console.log("in the else loop");
         }
         
         $("#msg").keypress(function(event){
             
+            ////store a new input in the local storage
             if (event.which == "13"){
-            //store a new input in the local storage
-            var timeStamp = new Date().getTime();
-            var msgValue = "<p>" + timeStamp + " - " + $("input").val() + "</p>"; 
-           
-            messages.push(msgValue); 
+            var timeStamp = new Date();
+            var newEntry = "<p>" + timeStamp.toUTCString() + " - " + $( this ).val() + "</p>"; 
+            messages.push(newEntry); 
             localStorage.setItem ("messages", JSON.stringify(messages)); 
             };
 
-            $("#log").prepend(msgValue);
+            //display the newest entry on top of the log
+            $("#log").prepend(newEntry);
         });
     });  
 
