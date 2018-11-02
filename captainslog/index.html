@@ -8,35 +8,26 @@
     <link rel="stylesheet" href="style.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
-        
-    $(document).ready(function(){
 
-/*
-        var message = $ ('#msg').val();
-        localStorage.setItem( 'msg', message ); 
-        var value = localStorage.getItem('msg');
-*/
+    $(document).ready( function() {
+    
+        var pressEnter = jQuery.Event ("keydown", { keyCode: 13 }); 
+        var messages = [];
 
+        $("input").on(pressEnter, function(event){
+            
+            //store a new input in the local storage
+            var timeStamp = new Date().getTime();
+            var msgValue = timeStamp + " -  " + $("input").val(); 
+            messages.push (msgValue);
+            localStorage.setItem ("messages", JSON.stringify(messages));
 
-    var trigger = jQuery.Event ("keydown", { keyCode: 13 });
-
-    ////https://api.jquery.com/val/
-    var message = $( "input" ).val();
-
-       
-    //https://api.jquery.com/trigger/
-    $( "input" ).on( trigger, function {
-        localStorage.setItem( 'msg', message );
-        $("#log").text (localStorage.getItem("msg"); 
-    }); 
-
-        // display (function() {
-        // $( "div" ).text( localStorage.getItem("msg") );
-        // })
-        // .display();
-
-
-}
+            //display all the messages in log 
+            for (var i=0; i < localStorage.length; i++) { 
+                $("#log").append (getItem(localStorage.key(i) + "<br>" )); 
+            }
+        });
+    });  
 
     </script>
 </head>
