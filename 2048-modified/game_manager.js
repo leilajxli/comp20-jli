@@ -84,7 +84,6 @@ GameManager.prototype.actuate = function () {
   // Clear the state when the game is over (game over only, not win)
   if (this.over) {
     this.storageManager.clearGameState();
-     //$.post('/submit', {xml: yourXMLString });  //Leila's change
   } else {
     this.storageManager.setGameState(this.serialize());
   }
@@ -96,21 +95,6 @@ GameManager.prototype.actuate = function () {
     bestScore:  this.storageManager.getBestScore(),
     terminated: this.isGameTerminated()
   });
-
-  //Leila's change
-    $(".submit-button").click(function(){
-      var timestamp = new Date();
-      $.post("/submit",
-      {
-        "username" : $(".user-input").val();
-        "score": this.score, 
-        "grid" : this.grid,
-        "created at" : timestamp.toUTCString()
-      },
-      function(data,status){
-          alert("Data: " + data + "\nStatus: " + status);
-      }); //optional, just testing if this works 
-    })
 
 };
 
@@ -147,7 +131,37 @@ GameManager.prototype.move = function (direction) {
   // 0: up, 1: right, 2: down, 3: left
   var self = this;
 
-  if (this.isGameTerminated()) return; // Don't do anything if the game's over
+  if (this.isGameTerminated()) {
+
+   //Leila's change
+    var username = prompt("What is your name?");
+    var url = "https://sleepy-dawn-11651.herokuapp.com/submit";
+    var data = { "username" : username, "score": self.score, "grid" : JSON.stringify(self.grid) };
+    var topTen; 
+
+    var request = $.ajax({
+      type: "POST",
+      url: url, 
+      data: data
+    });
+
+    request.done(function(response) {
+      /*topTen += 
+        "<h1>Top 10 Players</h1><table><tr><th>Player</th><th>Score</th><th>Timestamp</th></tr>";
+        for (var count = 0; count < response.length; count++) {
+          topTen += "<tr><td>" + response[count].username + "</td><td>" + response[count].score + "</td><td>" + response[count].created_at + "</td><tr>";
+        }
+        topTen += " </table>";*/
+      var responseParsed  = JSON.stringify(response);
+      alert(responseParsed);
+    });
+
+    request.fail(function() {
+      alert( "Oops, fix the bug in ajax (game_manager.js)!" );
+    });
+
+  } // Don't do anything if the game's over
+  //currently the problem is that the info window would pop up multiple times 
 
   var cell, tile;
 
@@ -204,6 +218,7 @@ GameManager.prototype.move = function (direction) {
 
     this.actuate();
   }
+
 };
 
 // Get the vector representing the chosen direction
