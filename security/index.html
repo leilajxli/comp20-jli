@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Security and Privacy Assessment</title>
+</head>
+<body>
+	<h1>Security and Privacy Assessment for Jen Han</h1>
+	<h2>Introduction</h2>
+	<p></p>
+	<h2>Methodology</h2>
+	<p></p>
+	<h2>Abstract of Findings</h2>
+	<p></p>
+	<h2>Issues Found</h2>
+	<h3>1. Cross-Site Scripting</h3>
+	<p>The first vulnerability is Cross-Site Scripting. I performed an attack by adding an alert box script in the username field using curl. The issue is on the /submit page. My recommendation is to use a validator package. Alternatively, the developer could encode all the special characters in the user's input.</p>
+		<br>My XSS code:
+		<br>curl --data "username=<script>alert('HACKED BY LEILA')</script>&score=6666&grid=[]" https://peaceful-peak-19115.herokuapp.com/submit
+		<br>
+		<br>The solution:
+		<br>var validator = require('validator');
+		<br>username=username.place(/[^\w\s]gi, '');
+		<br>
+	<h3>2. NoSQL Injection</h3>
+	<p>The /scores.json page has a NoSQL Injection vulnerability. I was able to perform a query on the address bar and the page returned all the data in the database in JSON format, which I was not supposed to get access to.</p>
+		<br>My Query String: 
+		<br>https://peaceful-peak-19115.herokuapp.com/scores.json?username[$ne]=hello
+		<br>
+		<br>The solution:
+		<br>
+	<h3>3. Cross-Origin-Resource-Sharing</h3>
+		<p></p>
+		<br>
+	<h2>Conclusion</h2>
+	<p></p>
+	<h2>References</h2>
+
+</body>
+</html>
