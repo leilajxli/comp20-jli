@@ -5,31 +5,40 @@
 </head>
 <body>
 	<h1>Security and Privacy Assessment for Jen Han</h1>
+
 	<h2>Introduction</h2>
-	<p></p>
+	<p>This report provides a security and privacy assessment for Jen Han's web application hosted on https://peaceful-peak-19115.herokuapp.com/. This application builds a server that accept user input from the game 2048. The changes Jen made to the 2048 game manager enables the player to input a username, then the name, score and grid will be sent to  to the game server. The game server captures the data, creates a timestamp, and then stores the data in a mlab database. The server also fetches the data from the database, sorts it in a descending order of scores, and then displays the top 10 results. </p>
+
 	<h2>Methodology</h2>
-	<p></p>
+	<p>I used curl to test the POST path (/submit). I also used the Firefox browser to test the GET path for querying(/scores.json). </p>
+
 	<h2>Abstract of Findings</h2>
-	<p></p>
+	<p>1. Cross-Site Scripting: The server did not prevent users from injecting malicious code that might modify the features of the application or display unwanted content. YOU NEVER TRUST THE USER. When prompted to enter a username, the user can put in whatever they want. </p>
+	<p>2. NoSQL Injection: The /scores.json path is designed so that users can query the database with a specific username. However, the user is able to get access to the entire database with some query phrases. This is especially dangerous for databases that store sensitive information.</p>
+	<p>3. CORS: Currently, the server is sharing resources with any random website in the world. This is dangerous because </p>
+
 	<h2>Issues Found</h2>
-	<h3>1. Cross-Site Scripting</h3>
-	<p>The first vulnerability is Cross-Site Scripting. I performed an attack by adding an alert box script in the username field using curl. The issue is on the /submit page. My recommendation is to use a validator package. Alternatively, the developer could encode all the special characters in the user's input.</p>
-		<br>My XSS code:
-		<br>curl --data "username=<script>alert('HACKED BY LEILA')</script>&score=6666&grid=[]" https://peaceful-peak-19115.herokuapp.com/submit
-		<br>
-		<br>The solution:
-		<br>var validator = require('validator');
-		<br>username=username.place(/[^\w\s]gi, '');
-		<br>
+
+	<h3>1. Cross-Site Scripting(XSS)</h3>
+	<p>The first vulnerability is Cross-Site Scripting on the /submit page. Using curl, I performed an attack by injecting an script for a alert box in the username field. My recommendation is to use a validator package. Alternatively, the developer could encode all the special characters in the user's input.</p>
+	<p>A hacker more malicious than I am could use Cross-Site Scripting to present all users with fraudulent web content, steal cookie information and obstruct the normal functioning of the site.</p>
+	<img src="xss.png" width="200" height="200" alt="Screenshot of Cross-Site Scripting hack"/>
+		<p>My XSS code:</p>
+			<code>curl --data "username=<script>alert('HACKED BY LEILA')</script>&score=6666&grid=[]" https://peaceful-peak-19115.herokuapp.com/submit
+			</code>
+		<p>The solution:</p>
+		<code>var validator = require('validator');</code>
+		<code>username=username.place(/[^\w\s]gi, '');></code>
+
 	<h3>2. NoSQL Injection</h3>
-	<p>The /scores.json page has a NoSQL Injection vulnerability. I was able to perform a query on the address bar and the page returned all the data in the database in JSON format, which I was not supposed to get access to.</p>
-		<br>My Query String: 
-		<br>https://peaceful-peak-19115.herokuapp.com/scores.json?username[$ne]=hello
-		<br>
-		<br>The solution:
-		<br>
+	<p>The /scores.json page has a NoSQL Injection vulnerability. I was able to perform a query on the address bar and the page returned all the data in the database in JSON format, which I was not supposed to get access to. When I used the [$ne] operator, the server returned all the documents with fieldnames "not equal to" my query phrase.</p>
+	<img src="injection.png" width="200" height="200" alt="Screenshot of Cross-Site Scripting hack"/>
+		<p>My Query String:</p> 
+			<code>https://peaceful-peak-19115.herokuapp.com/scores.json?username[$ne]=hello</code>
+		<p>The solution:</p>
+
 	<h3>3. Cross-Origin-Resource-Sharing</h3>
-		<p></p>
+	<p></p>
 		<br>
 	<h2>Conclusion</h2>
 	<p></p>
