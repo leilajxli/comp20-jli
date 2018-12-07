@@ -3,14 +3,21 @@
 The point of this lab is to test out basic-level attacks to a simple web application. 
 
 ## Successfully implemented: 
- - Found 3 security vulnerabilities. 
+ - Found 3 security vulnerabilities and 2 places for improvement
 
 ## What can be improved: 
 - Can find more security vulnerabilities 
-- 
+- Can improve on the design of the page (css)
 
 ## Thanks to the help of ....
-Michael Dunkelman, Jen Han (for providing your code for my pleasure).... 
+- Our wonderful TAs: Ralfi, Michael Dunkelman, Michael Robinson
+- Jen Han (for providing your code for my pleasure).... 
+
+## Time spent: 
+I spent approximately 6 hours on this assignment. 
+- Tuesday 2:00-5:00 
+- Wednesday 9:00-10:00
+- Thursday 4:00-6:00 
 
 ## Requirements: 
 (1 point) - Introduction
