@@ -17,9 +17,10 @@
 	<h2>Abstract of Findings</h2>
 	<p>1. Cross-Site Scripting: The server does not prevent users from injecting malicious code that could modify the features of the application or display unwanted content. YOU NEVER TRUST THE USER. When prompted to enter a username, the user can put in whatever they want. </p>
 	<p>2. NoSQL Injection: The /scores.json path is designed so that users can query the database with a specific username. However, the user is able to get access to the entire database with some query phrases. This is especially dangerous for databases that store sensitive information.</p>
-	<p>3. CORS: Currently, the server is sharing resources with any random website in the world. This is dangerous because </p>
+	<p>3. CORS: Currently, the server is sharing resources with any random website in the world. This is dangerous because malicious user could make XMLHttpRequest to the website and get information that they are not supposed to have access to. </p>
 	<p>4. Data validation: In the /submit path, the program did not check for the data type of the username(string), score (integer) and grid (string).</p>
 	<p>5. Better code: In the / path, when fetching the 10 results from the database, Jen could use the .limit(10) operator to replace 10 lines of code.</p> 
+	
 	<h2>Issues Found</h2>
 
 	<h3>1. Cross-Site Scripting(XSS)</h3>
